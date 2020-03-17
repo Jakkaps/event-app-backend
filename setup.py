@@ -7,7 +7,7 @@ requires = [
 ]
 
 setup(
-    name='flask_todo',
+    name='flask_event',
     version='0.0',
     description='A To-Do List built with Flask',
     author='Jens Kristoffersen',
