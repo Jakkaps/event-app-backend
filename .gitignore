@@ -2,3 +2,5 @@ Pipfile
 .vscode
 Pipfile.lock
 __pycache__
+venv
+env
