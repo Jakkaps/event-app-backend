@@ -1,5 +1,4 @@
 from event.app import app
-<<<<<<< HEAD
 from flask import jsonify, request
 from event.event import Event
 
@@ -44,10 +43,3 @@ def search():
 
     # Execute the query
     
-=======
-
-
-@app.route("/")
-def base():
-    return "Hey there"
->>>>>>> Moved endpoints to own file endpoints.py
