@@ -1,5 +1,5 @@
 from event.app import app
-from flask import jsonify
+from flask import jsonify, request
 from event.event import Event
 
 
@@ -8,11 +8,29 @@ from event.event import Event
 def get_events():
     """
     Returns a list of all events from all datasources
+    
+    It is possible to filter the request with the following flags
+    - name: str – name containing the given string 
+    - studyProgram: str – study program containing given string
+    - dateRange: str – two timestamps separated with - as 'start-stop'. 
+    Gives all events in the interval
+    - 
     """
+    # Handle the filters
+    name = request.args.get("name", "") 
+    studyProgram = request.args.get("studyProgram", "")
+    dateRangeStr = request.args.get("dateRange", "")
+
 
     # Moch event for testing
     event = Event("AbelLan", "Kult lan for abakuler", "21.03.2020", "Abakus", "A2")
-    events = [event.__dict__]
-    
 
+    # filter the list of events based on the query
+    # Temporary filter for now... this should be done in the query
+    events = [event]
+    events = [e.__dict__ for e in events if (name in e.name)]
+
+    
     return jsonify(events)
+
+
