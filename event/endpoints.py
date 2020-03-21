@@ -1,4 +1,4 @@
-from event.app import app
+from event.app import app, database_handler
 from flask import jsonify, request
 from event.event import Event
 
@@ -27,7 +27,7 @@ def get_events():
 
     # filter the list of events based on the query
     # Temporary filter for now... this should be done in the query
-    events = [event]
+    events = database_handler.get_all_events()
     events = [e.__dict__ for e in events if (name in e.name)]
 
     
