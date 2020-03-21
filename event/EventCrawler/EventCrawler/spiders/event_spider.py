@@ -5,6 +5,9 @@ class EventSpider(scrapy.Spider):
     name = "event"
 
     def start_requests(self):
+        """
+        Starts a list of processes for every function-url combo specified
+        """
         urls = {
             self.abakus_parse : "https://Abakus.no/events"
         }
@@ -15,6 +18,10 @@ class EventSpider(scrapy.Spider):
 
     
     def abakus_parse(self, response):
+        """
+        Goes to 'Abakus.no/events/' and starts another process on each individual events it finds
+        """
+        
         events = []
         print(response)
 
@@ -23,6 +30,9 @@ class EventSpider(scrapy.Spider):
             yield scrapy.Request(url=url, callback=self.abakus_parse_event)
 
     def abakus_parse_event(self, response):
+        """
+        Gets information from and individual abakus event-page
+        """
         
         description = ""
         for paragraph in response.xpath("/descendant::span[@data-text='true']/text()"):
