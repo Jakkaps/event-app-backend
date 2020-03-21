@@ -34,3 +34,12 @@ def get_events():
     return jsonify(events)
 
 
+@app.route('/search')
+def search():
+    """
+    Search the event database for the given query 
+    """
+    query = request.args.get('query')
+
+    # Execute the query
+    
