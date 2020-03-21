@@ -4,7 +4,8 @@ requires = [
     'flask',
     'flask-sqlalchemy',
     'psycopg2-binary',
-    'scrapy'
+    'scrapy',
+    'mysql-connector-python'
 ]
 
 setup(
