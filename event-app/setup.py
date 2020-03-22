@@ -2,9 +2,6 @@ from setuptools import setup, find_packages
 
 requires = [
     'flask',
-    'flask-sqlalchemy',
-    'psycopg2-binary',
-    'scrapy',
     'mysql-connector-python',
     'uwsgi'
 ]
