@@ -2,7 +2,6 @@ from setuptools import setup, find_packages
 
 requires = [
     'scrapy',
-    'scrapyd',
     'mysql-connector-python'
 ]
 
@@ -14,7 +13,6 @@ setup(
     author_email='jensakrr@gmail.com',
     keywords='scrapy',
     packages=find_packages(),
-    entry_points={'scrapy': ['settings = EventCrawler.settings']},
     include_package_data=True,
     install_requires=requires
 )

@@ -1,5 +1,7 @@
 import scrapy
+import datetime
 from ..items import Event 
+from scrapy.crawler import CrawlerProcess
 
 class EventSpider(scrapy.Spider):
     name = "event"
@@ -8,6 +10,7 @@ class EventSpider(scrapy.Spider):
         """
         Starts a list of processes for every function-url combo specified
         """
+
         urls = {
             self.abakus_parse : "https://Abakus.no/events"
         }
@@ -23,7 +26,6 @@ class EventSpider(scrapy.Spider):
         """
         
         events = []
-        print(response)
 
         for event in response.xpath("//descendant::div[@class='styles__eventItem--2c-Z_4PWb2']"):
             url = "https://Abakus.no" + event.xpath("./div[1]/a/@href").get()
@@ -37,15 +39,24 @@ class EventSpider(scrapy.Spider):
         url = response.request.url
         name = response.xpath("/html/body/div/div/div/div[2]/div/div/div[2]/h2/text()").get()
         type = response.xpath("/html/body/div/div/div/div[2]/div/div/div[2]/div[1]/div[2]/ul/li[span[contains(text(), 'Hva')]]/strong/text()").get()
-        start = response.xpath("/html/body/div/div/div/div[2]/div/div/div[2]/div[1]/div[2]/ul/li[span[contains(text(), 'Når')]]/strong/span/time/@datetime").get()
         location = response.xpath("/html/body/div/div/div/div[2]/div/div/div[2]/div[1]/div[2]/ul/li[span[contains(text(), 'Finner sted')]]/strong/text()").get()
+
+        start_as_milli = int(response.xpath("/html/body/div/div/div/div[2]/div/div/div[2]/div[1]/div[2]/ul/li[span[contains(text(), 'Når')]]/strong/span/time/@datetime").get())
+        start_as_date = datetime.datetime.fromtimestamp(start_as_milli/1000.0)
+        start = start_as_date.strftime('%Y-%m-%d %H:%M:%S')
 
         description = ""
         for paragraph in response.xpath("/descendant::span[@data-text='true']/text()"):
-            description += paragraph.get() + "\n"
-        description = description[:-2]
+            description += paragraph.get().replace("\n", "").replace("'", "")
+        description = "".join(description)
 
         study_program = "MTDT, MTKOM"
         host = "Abakus"
 
         yield Event(name=name, description=description, url=url, host=host, start=start, location=location, type=type, study_program=study_program)
+
+    
+if __name__ == '__main__':
+    process = CrawlerProcess()
+    process.crawl(EventSpider)
+    process.start()
