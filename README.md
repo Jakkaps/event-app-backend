@@ -2,16 +2,17 @@
 The backend for finding all interesting events happening for students in Trondheim
 
 ## Running 
-### Flask app
-**NB! THIS WILL BE CHANGED ONCE DOCKER IS IN PLACE**
+To run the project properly you need the following environment variable:
+- `EVENT_DB_PWD`
 
-To run the flask application as of now do 
+### Development
+#### Flask app
 ```bash
 $ export FLASK_APP=event.app
 $ export FLASK_ENV=development
 ```
 
-### Database
+#### Database
 The database is a MySQL database running with docker
 To build the database locally do
 
@@ -44,8 +45,8 @@ $ docker rm <ID of your container>
 ```
 Then run the start database script
 
-### Spiders
-To run the spiders, write
+#### Spiders
+To run the spiders, do
 
 ```bash
 $ python scrapy/EventCrawler/run_spiders.py
