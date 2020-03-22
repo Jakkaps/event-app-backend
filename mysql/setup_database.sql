@@ -12,5 +12,6 @@ CREATE TABLE events (
        url VARCHAR(200) NOT NULL,
        type VARCHAR(200),
        study_program VARCHAR(200),
-       class_year INTEGER
+       class_year INTEGER,
+       UNIQUE (name, host)
 );
