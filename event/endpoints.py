@@ -3,7 +3,6 @@ from flask import jsonify, request
 from event.event import Event
 
 
-
 @app.route('/get_events')
 def get_events():
     """
