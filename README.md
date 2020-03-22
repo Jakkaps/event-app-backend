@@ -26,7 +26,7 @@ $ ./build_database.sh` or `docker build -t event_db .
 Then, to run: 
 
 ```bash
-$ ./run_database
+$ ./run_database.sh
 ```
 
 If you need to rebuild the database, run the build script then
