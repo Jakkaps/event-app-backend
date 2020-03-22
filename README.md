@@ -43,3 +43,16 @@ and find the id of the event_db container
 $ docker rm <ID of your container>
 ```
 Then run the start database script
+
+### Spiders
+To run the spiders, do
+
+```bash
+$ cd scrapy
+```
+
+```bash
+$ scrapy crawl event
+```
+Given that the database is running, this will write all events to database.
+
