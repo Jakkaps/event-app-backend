@@ -56,7 +56,10 @@ class DatabaseHandler(object):
     def add_event(self, event: Event):
         query = f"""INSERT INTO events (name, description, start, end, host, location, url, study_program, class_year) 
         VALUES 
-        {event.name, event.description, event.start, event.end, event.host, event.location, event.url, event.study_program, event.class_year}"""
+        {event.name, event.description, event.start, event.end, event.host, event.location, event.url, event.type, event.study_program, event.class_year}"""
+
+        # for key in event.__dict__:
+        #     query += f"{key}='{event.__dict__[key]}, "
 
         query = query.replace("None", "NULL")
 
@@ -66,14 +69,13 @@ class DatabaseHandler(object):
         cursor.close()
 
     def update_event(self, event: Event):
-        
         query = "UPDATE events SET "
         for key in event.__dict__:
             query += f"{key}='{event.__dict__[key]}', "
 
         
         query = query[:-2].replace("'None'", "NULL")
-        query += f" WHERE name='{event.name}'"
+        query += f" WHERE name='{event.name}' AND host={event.host}"
             
         cursor = self.db.cursor()
         cursor.execute(query)
