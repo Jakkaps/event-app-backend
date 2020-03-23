@@ -3,18 +3,21 @@
 # Define your item pipelines here
 
 from .items import Event
+import os
 import mysql.connector
 
 class EventcrawlerPipeline(object):
     def open_spider(self, item):
         """
-        Connects to the given database and stores the connection 
+        Called when the spider opens. Connects to the given database and stores the connection 
         """
+
+        password = os.environ['EVENT_DB_PWD']
         self.db = mysql.connector.connect(
             host="localhost",
             port=3307,
             user="root",
-            password="password",
+            password=password,
             database="event_app",
             auth_plugin='mysql_native_password'
         )
@@ -23,21 +26,11 @@ class EventcrawlerPipeline(object):
         self.cursor = self.db.cursor()
 
     def close_spider(self, spider):
+        """
+        Called when the spider closes. Closes the connection to the database
+        """
         self.db.commit()
         self.cursor.close() 
-
-    def get_all_events(self) -> [Event]:
-       query = "SELECT * FROM events"
-       self.cursor.execute(query)
-
-       events = []
-       for e in cursor:
-           del e["id"]
-           event = Event(**e)
-           events.append(event)
-       cursor.close()
-
-       return events
 
 
     def process_item(self, event:Event, spider):
@@ -60,7 +53,6 @@ class EventcrawlerPipeline(object):
             query += f"{key}='{event[key]}', "
         query = query[:-2].replace("None", "NULL")
             
-        print("QUERY: " + query)
         self.cursor.execute(query)
 
         # TODO: Standarize event type 

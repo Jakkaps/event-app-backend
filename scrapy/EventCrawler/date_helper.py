@@ -32,7 +32,6 @@ class DateHelper:
 
         month_str = "".join(filter(str.isalpha, norwegian_date))
         month_number = 0
-        print("MONTH:" + month_str)
         for (index, month) in enumerate(self.norwegian_months):
             if month_str in month:
                 month_number = index + 1
