@@ -16,7 +16,7 @@ class EventSpider(scrapy.Spider):
         self.date_helper = DateHelper()
 
         urls = {
-            # self.abakus_parse : "https://abakus.no/events",
+            self.abakus_parse : "https://abakus.no/events",
             self.samfundet_parse : "https://www.samfundet.no/arrangement"
         }
 
