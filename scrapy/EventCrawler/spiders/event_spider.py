@@ -50,7 +50,7 @@ class EventSpider(scrapy.Spider):
 
         hour_start = int(hours[0:2])
         minute_start = int(hours[3:5])
-        event["start"] = date.replace(hour=hour_start, minute=minute_start)
+        event["start"] = date.replace(hour=hour_start, minute=minute_start, second=0)
 
         hour_end = int(hours[-5:-3])
         minute_end = int(hours[-2])
