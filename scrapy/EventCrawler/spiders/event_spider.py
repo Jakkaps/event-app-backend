@@ -1,5 +1,6 @@
 import scrapy
 import datetime
+from ..date_helper import DateHelper
 from ..items import Event 
 from scrapy.crawler import CrawlerProcess
 
@@ -11,21 +12,64 @@ class EventSpider(scrapy.Spider):
         Starts a list of processes for every function-url combo specified
         """
 
+        # Datehelper for use later
+        self.date_helper = DateHelper()
+
         urls = {
-            self.abakus_parse : "https://Abakus.no/events"
+            # self.abakus_parse : "https://abakus.no/events",
+            self.samfundet_parse : "https://www.samfundet.no/arrangement"
         }
 
         for yield_func in urls.keys():
             url = urls.get(yield_func)
             yield scrapy.Request(url=url, callback=yield_func)
 
+
+    def samfundet_parse(self, response):
+        """
+        Goes to samfundet.no/arrangment and starts another porcess for each event
+        """
+
+        for event_element in response.xpath("//td[@class='event-title']/a"):
+            url = "https://www.samfundet.no" + event_element.xpath("./@href").get()
+            name  = event_element.xpath("./text()").get()
+            
+            yield scrapy.Request(url=url, callback=self.samfundet_parse_event, cb_kwargs=dict(name=name, url=url))
     
+    def samfundet_parse_event(self, response, url, name):
+        event = Event()
+
+        event["name"] = name
+        event["url"] = url
+        event["location"] = response.xpath(".//td[text()='Lokale']/following-sibling::td/a/text()").get()
+        event["host"] = "Samfundet"
+
+        norwegian_date = response.xpath(".//td[text()='Dato']/following-sibling::td/text()").get().strip()
+        date = self.date_helper.norwegian_month_as_sql_date(norwegian_date)
+        hours = response.xpath(".//td[text()='Tid']/following-sibling::td/text()").get()
+
+        hour_start = int(hours[0:2])
+        minute_start = int(hours[3:5])
+        event["start"] = date.replace(hour=hour_start, minute=minute_start)
+
+        hour_end = int(hours[-5:-3])
+        minute_end = int(hours[-2])
+        event["end"] = date.replace(hour=hour_end, minute=minute_end)
+
+        description = ""
+        description += response.xpath(".//p[@class='description-short']/text()").get().strip()
+        description += "".join(response.xpath(".//div[@class='description-long']/p/text()").getall())
+        event["description"] = description
+
+        yield event
+
+
+
+
     def abakus_parse(self, response):
         """
-        Goes to 'Abakus.no/events/' and starts another process on each individual events it finds
+        Goes to 'abakus.no/events/' and starts another process on each individual events it finds
         """
-        
-        events = []
 
         for event in response.xpath("//descendant::div[@class='styles__eventItem--2c-Z_4PWb2']"):
             url = "https://Abakus.no" + event.xpath("./div[1]/a/@href").get()
