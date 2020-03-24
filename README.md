@@ -5,7 +5,13 @@ The backend for finding all interesting events happening for students in Trondhe
 To run the project properly you need the following environment variable:
 - `EVENT_DB_PWD`
 
-### Development
+### Production 
+...Not yet finnished
+```bash
+docker compose up --build
+```
+
+### Local development
 #### Flask app
 ```bash
 $ export FLASK_APP=event.app

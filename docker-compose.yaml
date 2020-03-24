@@ -1,0 +1,52 @@
+version: "3.7"
+
+
+services:
+  event_db:
+    build: ./mysql
+    container_name: event_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${EVENT_DB_PWD}
+    volumes:
+      - ./mysql:/docker-entrypoint-initdb.d/
+    ports:
+      - "3307:3306"
+    networks:
+      - db_nw
+
+
+  flask:
+    build: ./flask
+    container_name: flask
+    restart: always
+    depends_on:
+      - event_db
+    environment:
+      - EVENT_DB_HOST=event_db
+      - EVENT_DB_PWD=${EVENT_DB_PWD}
+      - EVENT_DB_PORT=3306
+    networks:
+      - web_nw
+      - db_nw
+    deploy:
+      resources:
+        limits: 
+          memory: 1000M
+
+  nginx:
+    build: ./nginx
+    container_name: nginx
+    depends_on:
+      - flask
+    restart: always
+    ports:
+      - "80:80"
+    networks:
+      - web_nw
+    
+networks:
+  db_nw:
+    driver: bridge
+  web_nw:
+    driver: bridge

@@ -3,17 +3,21 @@ from event.event import Event
 
 class DatabaseHandler(object):
     def __init__(self, host, port, user, password):
-        self.connect(host, port, user, password)
+        self.host = host
+        self.port = port
+        self.user = user
+        self.password = password
 
-    def connect(self, host, port, user, password):
+    def connect(self):
         """
         Connects to the given database and stores the connection 
         """
+        print(self.host, self.port, self.user, self.password)
         self.db = mysql.connector.connect(
-            host=host,
-            port=port,
-            user=user,
-            password=password,
+            host=self.host,
+            port=self.port,
+            user=self.user,
+            password=self.password,
             database="event_app",
             auth_plugin='mysql_native_password'
         )
@@ -26,6 +30,8 @@ class DatabaseHandler(object):
         if not it will be added
         """
 
+        self.connect()
+
         db_event_names = [e.name for e in self.get_all_events()]
 
         for event in events:
@@ -35,13 +41,21 @@ class DatabaseHandler(object):
             else:
                 # this is a new event
                 self.add_event(event)
+
+        self.db.close()
             
 
         
     def get_all_events(self) -> [Event]:
+        print("connecting")
+        self.connect()
         query = "SELECT * FROM events"
+        print("going to query the db")
         cursor = self.db.cursor(dictionary=True)
+        print("got the cursor")
         cursor.execute(query)
+        print("executed")
+
 
         events = []
         for e in cursor:
@@ -49,6 +63,8 @@ class DatabaseHandler(object):
             event = Event(**e)
             events.append(event)
         cursor.close()
+
+        self.db.close()
 
         return events
     

@@ -15,6 +15,7 @@ def get_events():
     Gives all events in the interval
     - 
     """
+
     # Handle the filters
     name = request.args.get("name", "") 
     studyProgram = request.args.get("studyProgram", "")
@@ -42,3 +43,6 @@ def search():
 
     # Execute the query
     
+@app.route("/random")
+def random():
+    return "random"

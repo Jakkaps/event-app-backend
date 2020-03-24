@@ -1,4 +1,3 @@
-import scrapy
 
 class Event():
 
