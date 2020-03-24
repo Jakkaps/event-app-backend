@@ -10,11 +10,13 @@ class AbakusSpider(scrapy.Spider):
         "https://abakus.no/events",
     ]
 
+    date_helper = DateHelper()
+
     def parse(self, response):
         """
         Goes to 'abakus.no/events/' and starts another process on each individual events it finds
         """
-
+ 
         for event in response.xpath("//descendant::div[@class='styles__eventItem--2c-Z_4PWb2']"):
             url = "https://abakus.no" + event.xpath("./div[1]/a/@href").get()
             yield scrapy.Request(url=url, callback=self.parse_event)
@@ -23,22 +25,23 @@ class AbakusSpider(scrapy.Spider):
         """
         Gets information from and individual abakus event-page
         """
+        
+        event = Event()
                 
-        url = response.request.url
-        name = response.xpath("/html/body/div/div/div/div[2]/div/div/div[2]/h2/text()").get()
-        type = response.xpath("/html/body/div/div/div/div[2]/div/div/div[2]/div[1]/div[2]/ul/li[span[contains(text(), 'Hva')]]/strong/text()").get()
-        location = response.xpath("/html/body/div/div/div/div[2]/div/div/div[2]/div[1]/div[2]/ul/li[span[contains(text(), 'Finner sted')]]/strong/text()").get()
+        event['url'] = response.request.url
+        event['name'] = response.xpath("/html/body/div/div/div/div[2]/div/div/div[2]/h2/text()").get()
+        event['type'] = response.xpath("/html/body/div/div/div/div[2]/div/div/div[2]/div[1]/div[2]/ul/li[span[contains(text(), 'Hva')]]/strong/text()").get()
+        event['location'] = response.xpath("/html/body/div/div/div/div[2]/div/div/div[2]/div[1]/div[2]/ul/li[span[contains(text(), 'Finner sted')]]/strong/text()").get()
 
         start_as_milli = int(response.xpath("/html/body/div/div/div/div[2]/div/div/div[2]/div[1]/div[2]/ul/li[span[contains(text(), 'Når')]]/strong/span/time/@datetime").get())
-        start_as_date = datetime.datetime.fromtimestamp(start_as_milli/1000.0)
-        start = start_as_date.strftime('%Y-%m-%d %H:%M:%S')
+        event['start'] = self.date_helper.milli_as_sql_date(start_as_milli)
 
         description = ""
         for paragraph in response.xpath("/descendant::span[@data-text='true']/text()"):
             description += paragraph.get().replace("\n", "").replace("'", "")
-        description = "".join(description)
+        event['description'] = "".join(description)
 
-        study_program = "MTDT, MTKOM"
-        host = "Abakus"
+        event['study_program'] = "MTDT, MTKOM"
+        event['host'] = "Abakus"
 
-        yield Event(name=name, description=description, url=url, host=host, start=start, location=location, type=type, study_program=study_program)
+        yield event
