@@ -43,6 +43,14 @@ services:
     build: ./scrapy
     container_name: scrapy
     restart: always
+    depends_on:
+      - event_db
+    environment:
+      - EVENT_DB_HOST=event_db
+      - EVENT_DB_PWD=${EVENT_DB_PWD}
+      - EVENT_DB_PORT=3306
+    networks:
+      - db_nw
     
     
 networks:
