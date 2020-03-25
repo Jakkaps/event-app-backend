@@ -1,0 +1,1 @@
+51 * * * * cd /scrapy && echo "hello" && python3 EventCrawler/run_spiders.py

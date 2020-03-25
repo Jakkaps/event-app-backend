@@ -38,6 +38,12 @@ services:
       - "80:80"
     networks:
       - web_nw
+
+  scrapy:
+    build: ./scrapy
+    container_name: scrapy
+    restart: always
+    
     
 networks:
   db_nw:
