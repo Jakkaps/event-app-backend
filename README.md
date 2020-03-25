@@ -45,14 +45,10 @@ $ docker rm <ID of your container>
 Then run the start database script
 
 ### Spiders
-To run the spiders, do
+To run the spiders, write
 
 ```bash
-$ cd scrapy
-```
-
-```bash
-$ scrapy crawl event
+$ python scrapy/EventCrawler/run_spiders.py
 ```
 Given that the database is running, this will write all events to database.
 
