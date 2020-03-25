@@ -8,8 +8,6 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ${EVENT_DB_PWD}
-    volumes:
-      - ./mysql:/docker-entrypoint-initdb.d/
     ports:
       - "3307:3306"
     networks:
@@ -29,10 +27,6 @@ services:
     networks:
       - web_nw
       - db_nw
-    deploy:
-      resources:
-        limits: 
-          memory: 1000M
 
   nginx:
     build: ./nginx
