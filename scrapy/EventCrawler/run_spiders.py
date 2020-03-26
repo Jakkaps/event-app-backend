@@ -9,8 +9,8 @@ from spiders import abakus_spider
 from spiders import samfundet_spider
 
 if __name__ == "__main__":
-
-    while True: 
+    time.sleep(30)
+    while True:
         process = CrawlerProcess(get_project_settings())
         process.crawl(abakus_spider.AbakusSpider)
         process.crawl(samfundet_spider.SamfundetSpider)

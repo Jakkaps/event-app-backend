@@ -12,10 +12,12 @@ class EventcrawlerPipeline(object):
         Called when the spider opens. Connects to the given database and stores the connection 
         """
 
-        self.db_password = os.environ['EVENT_DB_PWD']
-        self.db_host = os.environ['EVENT_DB_HOST', "localhost"]
-        self.db_port = os.environ['EVENT_DB_PORT', "3307"]
+        db_password = os.environ.get('EVENT_DB_PWD')
+        db_host = os.environ.get('EVENT_DB_HOST', "localhost")
+        db_port = os.environ.get('EVENT_DB_PORT', "3307")
         db_user = "root"
+
+        print(db_port)
         self.db = mysql.connector.connect(
             host=db_host,
             port=db_port,
@@ -26,13 +28,15 @@ class EventcrawlerPipeline(object):
         )
 
 
+        
+    
 
     def close_spider(self, spider):
         """
         Called when the spider closes. Closes the connection to the database
         """
-        self.db.commit()
-        self.db.close()
+        # if self.db: 
+        #     self.db.close()
 
     def process_item(self, event:Event, spider):
         """

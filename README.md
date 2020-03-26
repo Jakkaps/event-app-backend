@@ -6,50 +6,38 @@ To run the project properly you need the following environment variable:
 - `EVENT_DB_PWD`
 
 ### Production 
-...Not yet finnished
+To start the application run 
 ```bash
-docker compose up --build
+$ docker-compose up -d --build
+```
+Optionaly for debuggin (until logging is in place) you can drop the `-d` flag to view any output
+
+To stop it run 
+```bash
+$ docker-compose down
 ```
 
 ### Local development
 #### Flask app
+NB: the database must be running! 
 ```bash
+$ cd flask 
 $ export FLASK_APP=event.app
 $ export FLASK_ENV=development
+$ flask run 
 ```
 
 #### Database
-The database is a MySQL database running with docker
-To build the database locally do
-
-```bash
-$ cd mysql
-```
+If the production app is not running, in the root dir of the project run 
 
 ```bash 
-$ ./build_database.sh` or `docker build -t event_db .
+$ docker-compose run -p 3306:3307 event_db
 ```
 
-Then, to run: 
-
-```bash
-$ ./run_database.sh
+To then stop it run 
+```bash 
+$ docker-compose down 
 ```
-
-If you need to rebuild the database, run the build script then
-```bash
-$ docker stop event_db
-```
-
-```bash
-$ docker ps -a
-``` 
-and find the id of the event_db container
-
-```bash
-$ docker rm <ID of your container>
-```
-Then run the start database script
 
 #### Spiders
 To run the spiders, do
