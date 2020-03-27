@@ -63,7 +63,6 @@ class EventcrawlerPipeline(object):
         cursor.execute(query)
         cursor.close()
         self.db.commit()
-        print("PIPELINE RAN")
 
 
         # TODO: Standarize event type 

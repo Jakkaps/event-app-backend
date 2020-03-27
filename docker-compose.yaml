@@ -51,6 +51,8 @@ services:
       - EVENT_DB_PORT=3306
     networks:
       - db_nw
+    ports: 
+      - "4444:4444"
     
     
 networks:
