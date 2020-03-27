@@ -12,7 +12,6 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", "--debug", action="store_true")
-    parser.add_argument("-s", "--spider")
     args = parser.parse_args()
 
     if not args.debug:
@@ -21,9 +20,7 @@ if __name__ == "__main__":
     while True:
         process = CrawlerProcess(get_project_settings())
         process.crawl(abakus_spider.AbakusSpider)
-
-        if args.spider != 'abakus':
-            process.crawl(samfundet_spider.SamfundetSpider)
+        process.crawl(samfundet_spider.SamfundetSpider)
         
         process.start()
 
