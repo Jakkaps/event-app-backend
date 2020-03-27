@@ -1,12 +1,9 @@
-FROM selenium/standalone-chrome
+FROM python:3.7
 
 WORKDIR /scrapy
 
-Add . /scrapy
+ADD . /scrapy
 
-RUN sudo apt-get update
-RUN sudo apt-get install python
-RUN sudo apt-get install python3-pip -y
-RUN pip3 install .
+RUN pip install .
 
 CMD ["python3", "EventCrawler/run_spiders.py"]

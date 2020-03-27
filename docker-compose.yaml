@@ -45,20 +45,32 @@ services:
     restart: always
     depends_on:
       - event_db
+      - selenium
     environment:
       - EVENT_DB_HOST=event_db
       - EVENT_DB_PWD=${EVENT_DB_PWD}
       - EVENT_DB_PORT=3306
     networks:
       - db_nw
-    ports: 
-      - "4444:4444"
+      - scrape_nw
+    
+  selenium:
+    image: selenium/standalone-chrome:latest
+    container_name: selenium
+    restart: always
+    expose: 
+      - "4444"
     volumes:
       - /dev/shm:/dev/shm
-    
+    networks: 
+      - scrape_nw
+    ports: 
+      - "4444:4444"
     
 networks:
   db_nw:
     driver: bridge
   web_nw:
+    driver: bridge
+  scrape_nw:
     driver: bridge

@@ -9,12 +9,9 @@ from scrapy import signals
 from scrapy.http import HtmlResponse
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 import logging, sys
 
-driver = webdriver.Remote("http://127.0.0.1:4444/wd/hub", DesiredCapabilities.CHROME)
+driver = webdriver.Remote("http://selenium:4444/wd/hub", DesiredCapabilities.CHROME)
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
 
@@ -79,7 +76,9 @@ class EventcrawlerDownloaderMiddleware(object):
         return s
 
     def process_request(self, request, spider):
+        print("JA DETTE KJØRER")
         if hasattr(spider, 'use_selenium') and spider.use_selenium == True:
+            print("TIL OG MED MED ABAKUS")
             url = request.url
             driver.get(url)
             body = driver.page_source
