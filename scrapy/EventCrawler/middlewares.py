@@ -6,6 +6,16 @@
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
 from scrapy import signals
+from scrapy.http import HtmlResponse
+from selenium import webdriver
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import logging, sys
+
+driver = webdriver.Remote("http://127.0.0.1:4444/wd/hub", DesiredCapabilities.CHROME)
+logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
 
 class EventcrawlerSpiderMiddleware(object):
@@ -69,15 +79,13 @@ class EventcrawlerDownloaderMiddleware(object):
         return s
 
     def process_request(self, request, spider):
-        # Called for each request that goes through the downloader
-        # middleware.
+        if spider.use_selenium != None and spider.use_selenium == True:
+            url = request.url
+            driver.get(url)
+            body = driver.page_source
 
-        # Must either:
-        # - return None: continue processing this request
-        # - or return a Response object
-        # - or return a Request object
-        # - or raise IgnoreRequest: process_exception() methods of
-        #   installed downloader middleware will be called
+            return HtmlResponse(driver.current_url, body=body, encoding='utf-8', request=request)
+        
         return None
 
     def process_response(self, request, response, spider):

@@ -6,6 +6,7 @@ from scrapy.crawler import CrawlerProcess
 
 class AbakusSpider(scrapy.Spider):
     name = "abakus"
+    use_selenium = True
     start_urls = [
         "https://abakus.no/events",
     ]
@@ -29,16 +30,18 @@ class AbakusSpider(scrapy.Spider):
         event = Event()
                 
         event['url'] = response.request.url
-        event['name'] = response.xpath("/html/body/div/div/div/div[2]/div/div/div[2]/h2/text()").get()
-        event['type'] = response.xpath("/html/body/div/div/div/div[2]/div/div/div[2]/div[1]/div[2]/ul/li[span[contains(text(), 'Hva')]]/strong/text()").get()
-        event['location'] = response.xpath("/html/body/div/div/div/div[2]/div/div/div[2]/div[1]/div[2]/ul/li[span[contains(text(), 'Finner sted')]]/strong/text()").get()
+        event['name'] = response.xpath(".//h2[@class='ContentHeader__header--2o7lNZxfWI EventDetail__title--13hgFeanVH']/text()").get()
+        event['type'] = response.xpath(".//span[contains(text(), 'Hva')]/following-sibling::strong/text()").get()
+        event['location'] = response.xpath(".//span[contains(text(), 'Finner sted i')]/following-sibling::strong/text()").get()
 
-        start_as_milli = int(response.xpath("/html/body/div/div/div/div[2]/div/div/div[2]/div[1]/div[2]/ul/li[span[contains(text(), 'Når')]]/strong/span/time/@datetime").get())
-        event['start'] = self.date_helper.milli_as_sql_date(start_as_milli)
+        datetime = response.xpath(".//time[1]/@datetime").get()
+        if datetime != None :
+            start_as_milli = int(datetime)
+            event['start'] = self.date_helper.milli_as_sql_date(start_as_milli)
 
         description = ""
-        for paragraph in response.xpath("/descendant::span[@data-text='true']/text()"):
-            description += paragraph.get().replace("\n", "").replace("'", "")
+        for paragraph in response.xpath("//span[@data-text='true']/text()"):
+             description += paragraph.get().replace("\n", "").replace("'", "")
         event['description'] = "".join(description)
 
         event['study_program'] = "MTDT, MTKOM"
