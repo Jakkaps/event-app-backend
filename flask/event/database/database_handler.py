@@ -22,15 +22,24 @@ class DatabaseHandler(object):
             auth_plugin='mysql_native_password'
         )
         
-    def get_all_events(self) -> [Event]:
+    def get_all_events(self, filters=None) -> [Event]:
 
         self.connect()
         query = "SELECT * FROM events"
 
+        # Adding the filter clause to the query
+        FILTER = ""
+        if not filters is None and bool(filters):
+            FILTER = " WHERE "
+            for f in filters:
+                if filters[f] != "":
+                    FILTER += f"{f}={filters[f]}"
+
+        query += FILTER
+
         cursor = self.db.cursor(dictionary=True)
 
         cursor.execute(query)
-
 
 
         events = []

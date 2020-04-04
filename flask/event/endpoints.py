@@ -10,25 +10,26 @@ def get_events():
     
     It is possible to filter the request with the following flags
     - name: str – name containing the given string 
-    - studyProgram: str – study program containing given string
-    - dateRange: str – two timestamps separated with - as 'start-stop'. 
+    - class_year: str – study program containing given string
+    - host: str – Name of the host
+    - study_program: str – name of the study programs allowed
+    - start: str (timestamp) – The earliest starting time of the events
+    - Soon: dateRange: str – two timestamps separated with - as 'start-stop'.
     Gives all events in the interval
     - 
     """
 
     # Handle the filters
-    name = request.args.get("name", "") 
-    studyProgram = request.args.get("studyProgram", "")
-    dateRangeStr = request.args.get("dateRange", "")
+    filters = {}
 
+    for key in request.args:
+        filters[key] = request.args[key]
 
-    # Moch event for testing
-    event = Event("AbelLan", "Kult lan for abakuler", "21.03.2020", "Abakus", "A2")
 
     # filter the list of events based on the query
     # Temporary filter for now... this should be done in the query
-    events = database_handler.get_all_events()
-    events = [e.__dict__ for e in events if (name in e.name)]
+    events = database_handler.get_all_events(filters)
+    events = [e.__dict__ for e in events]
 
     
     return jsonify(events)
