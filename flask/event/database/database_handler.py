@@ -53,3 +53,21 @@ class DatabaseHandler(object):
 
         return events
     
+
+    def get_all_hosts(self) -> [str]:
+        """
+        returns a list of all hosts in the database
+        """
+        self.connect()
+       
+        query = "SELECT DISTINCT host from events"
+
+        cursor = self.db.cursor()
+        cursor.execute(query)
+
+        hosts = []
+
+        for host in cursor:
+            hosts.append(host[0])
+        self.db.close()
+        return hosts

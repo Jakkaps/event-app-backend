@@ -44,6 +44,11 @@ def search():
 
     # Execute the query
     
-@app.route("/random")
-def random():
-    return "random"
+@app.route('/get_hosts')
+def get_hosts():
+    """
+    Returns a list of all hosts with events in the database
+    """
+    hosts = database_handler.get_all_hosts()
+    print(hosts)
+    return jsonify(hosts)
