@@ -71,3 +71,33 @@ class DatabaseHandler(object):
             hosts.append(host[0])
         self.db.close()
         return hosts
+
+    def search(self, search_string) -> [Event]:
+        """
+        Returns all events where the string matches either the
+        - name
+        - host
+        - location
+        - description
+        - type
+        """
+        query = f"""SELECT * FROM events
+        WHERE name LIKE '%{search_string}%'
+        OR host LIKE '%{search_string}%'
+        OR location LIKE '%{search_string}%'
+        OR description LIKE '%{search_string}%'
+        OR type LIKE '%{search_string}%'"""
+
+        self.connect()
+        cursor = self.db.cursor(dictionary=True)
+        cursor.execute(query)
+        events = []
+        for e in cursor:
+            del e["id"]
+            event = Event(**e)
+            events.append(event)
+        cursor.close()
+
+        self.db.close()
+       
+        return events

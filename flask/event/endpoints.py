@@ -43,6 +43,9 @@ def search():
     query = request.args.get('query')
 
     # Execute the query
+    events = [e.__dict__ for e in database_handler.search(query)]
+
+    return jsonify(events)
     
 @app.route('/get_hosts')
 def get_hosts():
