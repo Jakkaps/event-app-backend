@@ -1,6 +1,10 @@
 # Event App Backend 
 The backend for finding all interesting events happening for students in Trondheim
 
+## Endpoints
+
+
+
 ## Running 
 To run the project properly you need the following environment variable:
 - `EVENT_DB_PWD`
@@ -33,6 +37,7 @@ If the production app is not running, in the root dir of the project run
 ```bash 
 $ docker-compose run -p 3306:3307 event_db
 ```
+
 
 To then stop it run 
 ```bash 

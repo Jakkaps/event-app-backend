@@ -81,20 +81,25 @@ class DatabaseHandler(object):
         - description
         - type
         """
-        query = f"""SELECT * FROM events
-        WHERE name LIKE '%{search_string}%'
-        OR host LIKE '%{search_string}%'
-        OR location LIKE '%{search_string}%'
-        OR description LIKE '%{search_string}%'
-        OR type LIKE '%{search_string}%'"""
+
+        query = """SELECT * FROM events WHERE
+        name LIKE ?
+        OR host LIKE ?
+        OR description LIKE ?
+        OR location LIKE ?
+        OR type LIKE ?"""
+
+        test = "SELECT * FROM events WHERE name = %s"
 
         self.connect()
-        cursor = self.db.cursor(dictionary=True)
-        cursor.execute(query)
+        cursor = self.db.cursor(prepared=True)
+        cursor.execute(query, [f"%{search_string}%" for i in range(5)])
+        # cursor.execute(test, (search_string,))
         events = []
         for e in cursor:
-            del e["id"]
-            event = Event(**e)
+            print(e)
+            e = list(e[1:])
+            event = Event(*e)
             events.append(event)
         cursor.close()
 
