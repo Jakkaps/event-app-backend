@@ -23,29 +23,29 @@ class DatabaseHandler(object):
         )
         
     def get_all_events(self, filters=None) -> [Event]:
-
+        """
+        Returns all events in database, that matches the filters given.
+        The filter should be given as a dictionary with column_name: value
+        """
         self.connect()
+
         query = "SELECT * FROM events"
 
-        # Adding the filter clause to the query
-        FILTER = ""
-        if not filters is None and bool(filters):
-            FILTER = " WHERE "
-            for f in filters:
-                if filters[f] != "":
-                    FILTER += f"{f}={filters[f]}"
+        # Find all the nonempty values that should be filtered for
+        filter_values = [value for value in filters.values() if value != ""]
 
-        query += FILTER
+        # If any filters applicable add them to the query
+        if len(filter_values) != 0:
+            query += " WHERE "
+            query += " AND ".join([f"{key} LIKE ?" for key in filters if filters[key] != ""])
 
-        cursor = self.db.cursor(dictionary=True)
-
-        cursor.execute(query)
-
+        cursor = self.db.cursor(prepared=True)
+        cursor.execute(query, filter_values)
 
         events = []
         for e in cursor:
-            del e["id"]
-            event = Event(**e)
+            e = e[1:]
+            event = Event(*e)
             events.append(event)
         cursor.close()
 

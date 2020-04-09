@@ -20,10 +20,16 @@ def get_events():
     """
 
     # Handle the filters
-    filters = {}
+    filters = {
+        "name": "",
+        "host": "",
+        "class_year": "",
+        "study_program": "",
+        "start": "",
+    }
 
-    for key in request.args:
-        filters[key] = request.args[key]
+    for key in filters:
+        filters[key] = request.args.get(key, "")
 
 
     # filter the list of events based on the query
