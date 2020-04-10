@@ -2,6 +2,7 @@ from setuptools import setup, find_packages
 
 requires = [
     'flask',
+    'flask-cors',
     'mysql-connector-python',
     'uwsgi'
 ]

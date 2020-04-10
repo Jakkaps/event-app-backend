@@ -1,8 +1,10 @@
 from flask import Flask
+from flask_cors import CORS
 from event.database.database_handler import DatabaseHandler
 import os
 
 app = Flask(__name__)
+CORS(app)
 
 db_host = os.environ.get("EVENT_DB_HOST", "localhost")
 db_port = os.environ.get("EVENT_DB_PORT", "3307")
