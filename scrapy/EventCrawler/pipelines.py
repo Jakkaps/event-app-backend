@@ -46,17 +46,18 @@ class EventcrawlerPipeline(object):
         cursor = self.db.cursor()
         
         query = "INSERT INTO events ("
-        for key in event.keys():
+        keys = list(event.keys())
+        for key in keys:
             query += f"{key}, "
         query = query[:-2] + ") "
 
         query += "VALUES("
-        for key in event.keys():
+        for key in keys:
             query += f"'{event[key]}', "
         query = query[:-2] + ") "
 
         query += "ON DUPLICATE KEY UPDATE "
-        for key in event.keys():
+        for key in keys:
             query += f"{key}='{event[key]}', "
         query = query[:-2].replace("None", "NULL")
             
@@ -64,8 +65,7 @@ class EventcrawlerPipeline(object):
         cursor.close()
         self.db.commit()
 
-
-        # TODO: Standarize event type 
+        print("QUERY:" + query)
 
         return event
     
