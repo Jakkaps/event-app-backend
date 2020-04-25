@@ -31,18 +31,20 @@ class AbakusSpider(scrapy.Spider):
                 
         event['url'] = response.request.url
         event['name'] = response.xpath(".//h2[@class='ContentHeader__header--2o7lNZxfWI EventDetail__title--13hgFeanVH']/text()").get()
-        event['type'] = response.xpath(".//span[contains(text(), 'Hva')]/following-sibling::strong/text()").get()
         event['location'] = response.xpath(".//span[contains(text(), 'Finner sted i')]/following-sibling::strong/text()").get()
-
-        datetime = response.xpath(".//time[1]/@datetime").get()
-        if datetime != None :
-            start_as_milli = int(datetime)
-            event['start'] = self.date_helper.milli_as_sql_date(start_as_milli)
 
         description = ""
         for paragraph in response.xpath("//span[@data-text='true']/text()"):
              description += paragraph.get().replace("\n", "").replace("'", "")
         event['description'] = "".join(description)
+
+        type = response.xpath(".//span[contains(text(), 'Hva')]/following-sibling::strong/text()").get()
+        event['type'] = Event.discern_type(type, event['name'], event['description'])
+
+        datetime = response.xpath(".//time[1]/@datetime").get()
+        if datetime != None :
+            start_as_milli = int(datetime)
+            event['start'] = self.date_helper.milli_as_sql_date(start_as_milli)
 
         event['study_program'] = "MTDT, MTKOM"
         event['host'] = "Abakus"

@@ -47,4 +47,6 @@ class SamfundetSpider(scrapy.Spider):
         description += "".join(response.xpath(".//div[@class='description-long']/p/text()").getall())
         event["description"] = description
 
+        event["type"] = Event.discern_type(None, event["name"], event["description"])
+
         yield event
