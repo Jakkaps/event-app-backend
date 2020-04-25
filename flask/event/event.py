@@ -1,7 +1,7 @@
 
 class Event():
 
-    def __init__(self, name, description, url, host, start=None, end=None, location=None, type=None,study_program=None, class_year=None):
+    def __init__(self, name, description, start=None, end=None,  host=None, location=None, url=None, type=None ,study_program=None, class_year=None):
         self.name = name
         self.description = description
         self.start = start

@@ -44,6 +44,7 @@ class DatabaseHandler(object):
 
         events = []
         for e in cursor:
+            print(e)
             e = e[1:]
             event = Event(*e)
             events.append(event)
