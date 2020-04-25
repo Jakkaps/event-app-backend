@@ -18,8 +18,8 @@ if __name__ == "__main__":
 
     while True:
         process = CrawlerProcess(get_project_settings())
-        # process.crawl(abakus_spider.AbakusSpider)
-        # process.crawl(samfundet_spider.SamfundetSpider)
+        process.crawl(abakus_spider.AbakusSpider)
+        process.crawl(samfundet_spider.SamfundetSpider)
         process.crawl(facebook_spider.FacebookSpider)
         
         process.start()

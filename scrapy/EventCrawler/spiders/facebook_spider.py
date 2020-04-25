@@ -44,6 +44,8 @@ class FacebookSpider(scrapy.Spider):
         event['url'] = response.request.url 
         event['study_program'] = study_program
 
+        event['type'] = Event.discern_type(None, event['name'], event['description'])
+
         time = response.xpath(".//div[@class='_2ycp _5xhk']/text()").get().split(" – ")
         date = self.date_helper.english_str_as_sql_date(time[0])
         event['start'] = date
