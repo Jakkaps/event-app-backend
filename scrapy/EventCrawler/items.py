@@ -22,8 +22,10 @@ class Event(scrapy.Item):
     types = {
         'Bedriftspresentasjon': ['bedriftspresentasjon', 'bedpress', 'bedrift', 'næringsliv'],
         'Kurs': ['kurs', 'forelesning'],
-        'Fest': ['fest', 'ball'],
-        'Konsert': ['album', 'spellemanspris']
+        'Fest': ['fest', 'imball', 'immatrikuleringsball'],
+        'Konsert': ['album', 'spellemanspris'],
+        'Foredrag': ['foredrag', 'samtale', 'presentasjon'],
+        'Konkurranse': ['quiz', 'konkurranse', 'premie', 'vinne', 'hackathon']
     }
 
     @staticmethod
@@ -36,7 +38,7 @@ class Event(scrapy.Item):
 
         # Then the title
         if type == None:
-            type = Event.__check_against_keywords(title)
+            type = Event.__check_against_keywords(title, strict=True)
 
         # Then the description
         if type == None:
@@ -79,17 +81,4 @@ class Event(scrapy.Item):
         v=list(scores.values())
         k=list(scores.keys())
         best_match = k[v.index(max(v))]
-        print(scores)
         return best_match if scores[best_match] != 0 else None
-
-title = 'Energidagen 2019'
-description = '''Er du student i energi og miljø, eller nærliggende fag, og vil bli kjent med relevant fagmiljø og næringsliv? Representerer du en bedrift i energisektoren og vil komme i kontakt med studenter? Da er Energidagen årets viktigste møteplass for deg! På Energidagen møtes studenter, fagmiljø og næringsliv for å utveksle erfaring, kunnskap og inspirasjon. Bedrifter har mulighet til å profilere seg, samt delta på spennende foredrag og møte høyt motiverte og ambisiøse studenter. Energidagen arrangeres av studentene i 4. og 5. klasse på Energi og miljø-studiet i samarbeid med Energikontakten.
-Program for Energidagen 2019:
-10:00 – 10:00 Ballongslipp og åpning
-10:00 – 16:00 Mingling på stand utover hele dagen, mulighet for speedintervju
-11:00 – 12:00 Det smarte grønne skiftet og Innovative prosjekter, EL5
-15:00 – 16:20 Verdiskaping i det grønne samfunnet med innlegg av våre gullsponsorer DNV GL, Statnett, GK og Siemens, EL3
-Påmelding til foredragene for studenter:
-Det smarte grønne skiftet og Innovative prosjekter: https://teknologiporten.no/nb/arrangement/865/
-Verdiskaping i det grønne samfunnet:'''
-print(Event.discern_type(None, title, description))
