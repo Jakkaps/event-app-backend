@@ -17,7 +17,6 @@ class EventcrawlerPipeline(object):
         db_port = os.environ.get('EVENT_DB_PORT', "3307")
         db_user = "root"
 
-        print(db_port)
         self.db = mysql.connector.connect(
             host=db_host,
             port=db_port,
@@ -64,8 +63,6 @@ class EventcrawlerPipeline(object):
         cursor.execute(query)
         cursor.close()
         self.db.commit()
-
-        print("QUERY:" + query)
 
         return event
     

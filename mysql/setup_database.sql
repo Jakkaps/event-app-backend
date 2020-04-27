@@ -13,5 +13,6 @@ CREATE TABLE events (
        type VARCHAR(200),
        study_program VARCHAR(200),
        class_year INTEGER,
+       image_source VARCHAR(400),
        UNIQUE (name, host)
 );

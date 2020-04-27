@@ -76,9 +76,7 @@ class EventcrawlerDownloaderMiddleware(object):
         return s
 
     def process_request(self, request, spider):
-        print("JA DETTE KJØRER")
         if hasattr(spider, 'use_selenium') and spider.use_selenium == True:
-            print("TIL OG MED MED ABAKUS")
             url = request.url
             driver.get(url)
             body = driver.page_source

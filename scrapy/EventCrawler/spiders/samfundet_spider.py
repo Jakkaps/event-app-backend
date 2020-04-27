@@ -30,6 +30,9 @@ class SamfundetSpider(scrapy.Spider):
         event["location"] = response.xpath(".//td[text()='Lokale']/following-sibling::td/a/text()").get()
         event["host"] = "Samfundet"
 
+        image_style = response.xpath(".//div[@class='banner-image'][1]/@style").get()
+        event["image_source"] = "https://samfundet.no" + image_style.split("url(")[1][:-1]
+
         norwegian_date = response.xpath(".//td[text()='Dato']/following-sibling::td/text()").get().strip()
         date = self.date_helper.norwegian_month_as_sql_date(norwegian_date)
         hours = response.xpath(".//td[text()='Tid']/following-sibling::td/text()").get()

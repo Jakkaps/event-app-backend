@@ -43,6 +43,7 @@ class FacebookSpider(scrapy.Spider):
         event['location'] = response.xpath(".//span[@class='_5xhk']/text()").get()
         event['url'] = response.request.url 
         event['study_program'] = study_program
+        event['image_source'] = response.xpath(".//div[@class='uiScaledImageContainer _3ojl']/img/@src").get()
 
         event['type'] = Event.discern_type(None, event['name'], event['description'])
 

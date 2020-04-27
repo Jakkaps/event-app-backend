@@ -40,8 +40,6 @@ class DateHelper:
         month_number = 0
         month_str = month_str.lower()
         for (index, month) in enumerate(self.english_months):
-            print(index)
-            print(month)
             if month_str in month:
                 month_number = index + 1
                 break

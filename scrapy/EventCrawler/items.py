@@ -18,6 +18,7 @@ class Event(scrapy.Item):
     type = scrapy.Field()
     study_program = scrapy.Field()
     class_year = scrapy.Field()
+    image_source = scrapy.Field()
 
     types = {
         'Bedriftspresentasjon': ['bedriftspresentasjon', 'bedpress', 'bedrift', 'næringsliv'],
@@ -74,7 +75,6 @@ class Event(scrapy.Item):
                         if keyword == word:
                             scores[type] = scores[type] + 10
                         elif keyword in word:
-                            print(word)
                             scores[type] = scores[type] + 1
        
         # Return the type with the largest score, but only if one of them != 0
