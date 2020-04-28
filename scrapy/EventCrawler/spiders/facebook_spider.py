@@ -1,13 +1,11 @@
 import scrapy
 import datetime
-from date_helper import DateHelper
-from items import Event 
+from items import Event
+import dateparser 
 
 class FacebookSpider(scrapy.Spider):
     name = "facebook"
     use_selenium = True
-
-    date_helper = DateHelper()
 
     def start_requests(self):
         fb_pages = {
@@ -36,7 +34,7 @@ class FacebookSpider(scrapy.Spider):
     
     def parse_event(self, response, study_program):
         event = Event()
-
+ 
         event['name'] = response.xpath(".//h1[@data-testid='event-permalink-event-name']/text()").get()
         event['description'] = '\n'.join(response.xpath(".//div[@class='_63ew']/span/text()").getall())
         event['host'] = response.xpath(".//div[@data-testid='event_permalink_feature_line']/@content").get()
@@ -47,11 +45,13 @@ class FacebookSpider(scrapy.Spider):
 
         event['type'] = Event.discern_type(None, event['name'], event['description'])
 
-        time = response.xpath(".//div[@class='_2ycp _5xhk']/text()").get().split(" – ")
-        date = self.date_helper.english_str_as_sql_date(time[0])
+        # Get's two dates, one with the full start and one with only the hours of the end
+        date, end = response.xpath(".//div[@class='_2ycp _5xhk']/text()").get().split(" – ")
+        date = dateparser.parse(date)
         event['start'] = date
-        end_hour, end_minute = self.date_helper.hour_str_hour_minute(time[1])
-        event['end'] = date.replace(hour=end_hour, minute=end_minute)
+        end = dateparser.parse(end)
+        date = date.replace(hour=end.hour, minute=end.minute)
+        event['end'] = date
 
         yield event
 

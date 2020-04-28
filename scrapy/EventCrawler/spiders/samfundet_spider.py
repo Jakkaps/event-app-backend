@@ -1,6 +1,6 @@
 import scrapy
 import datetime
-from date_helper import DateHelper
+import dateparser
 from items import Event 
 
 class SamfundetSpider(scrapy.Spider):
@@ -9,7 +9,6 @@ class SamfundetSpider(scrapy.Spider):
         "https://www.samfundet.no/arrangement"
     ]
 
-    date_helper = DateHelper()
 
     def parse(self, response):
         """
@@ -33,17 +32,13 @@ class SamfundetSpider(scrapy.Spider):
         image_style = response.xpath(".//div[@class='banner-image'][1]/@style").get()
         event["image_source"] = "https://samfundet.no" + image_style.split("url(")[1][:-1]
 
-        norwegian_date = response.xpath(".//td[text()='Dato']/following-sibling::td/text()").get().strip()
-        date = self.date_helper.norwegian_month_as_sql_date(norwegian_date)
-        hours = response.xpath(".//td[text()='Tid']/following-sibling::td/text()").get()
-
-        hour_start = int(hours[0:2])
-        minute_start = int(hours[3:5])
-        event["start"] = date.replace(hour=hour_start, minute=minute_start, second=0)
-
-        hour_end = int(hours[-5:-3])
-        minute_end = int(hours[-2])
-        event["end"] = date.replace(hour=hour_end, minute=minute_end)
+        # The date is one field, and start and end times is one field
+        date = dateparser.parse(response.xpath(".//td[text()='Dato']/following-sibling::td/text()").get().strip())
+        start, end = response.xpath(".//td[text()='Tid']/following-sibling::td/text()").get().strip().replace('.', ':').split('-')
+        start = dateparser.parse(start)
+        end = dateparser.parse(end)
+        event["start"] = date.replace(hour=start.hour, minute=start.minute)
+        event["end"] = date.replace(hour=end.hour, minute=end.minute)
 
         description = ""
         description += response.xpath(".//p[@class='description-short']/text()").get().strip()

@@ -3,7 +3,8 @@ from setuptools import setup, find_packages
 requires = [
     'scrapy',
     'mysql-connector-python',
-    'selenium'
+    'selenium',
+    'dateparser'
 ]
 
 setup(

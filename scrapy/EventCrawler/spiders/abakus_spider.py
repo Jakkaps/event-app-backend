@@ -1,7 +1,7 @@
 import scrapy
 import datetime
-from date_helper import DateHelper
-from items import Event 
+import pytz
+from items import Event
 from scrapy.crawler import CrawlerProcess
 
 class AbakusSpider(scrapy.Spider):
@@ -10,8 +10,6 @@ class AbakusSpider(scrapy.Spider):
     start_urls = [
         "https://abakus.no/events",
     ]
-
-    date_helper = DateHelper()
 
     def parse(self, response):
         """
@@ -42,10 +40,12 @@ class AbakusSpider(scrapy.Spider):
         type = response.xpath(".//span[contains(text(), 'Hva')]/following-sibling::strong/text()").get()
         event['type'] = Event.discern_type(type, event['name'], event['description'])
 
-        datetime = response.xpath(".//time[1]/@datetime").get()
-        if datetime != None :
-            start_as_milli = int(datetime)
-            event['start'] = self.date_helper.milli_as_sql_date(start_as_milli)
+        start, end = response.xpath(".//time/@datetime").getall()
+        if start != None :
+            event['start'] = datetime.datetime.fromtimestamp(int(start)/1000.0).astimezone(pytz.timezone('Europe/Oslo'))
+
+        if end != None:
+            event['end'] = datetime.datetime.fromtimestamp(int(end)/1000.0).astimezone(pytz.timezone('Europe/Oslo'))
 
         event['study_program'] = "MTDT, MTKOM"
         event['host'] = "Abakus"
