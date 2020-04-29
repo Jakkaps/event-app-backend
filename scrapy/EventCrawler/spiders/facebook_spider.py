@@ -46,12 +46,15 @@ class FacebookSpider(scrapy.Spider):
         event['type'] = Event.discern_type(None, event['name'], event['description'])
 
         # Get's two dates, one with the full start and one with only the hours of the end
-        date, end = response.xpath(".//div[@class='_2ycp _5xhk']/text()").get().split(" – ")
-        date = dateparser.parse(date)
-        event['start'] = date
-        end = dateparser.parse(end)
-        date = date.replace(hour=end.hour, minute=end.minute)
-        event['end'] = date
+        date = response.xpath(".//div[@class='_2ycp _5xhk']/text()").get()
+        print("THIS WAS THE DATE RECORDED:" + date)
+        if len(date.split(" – ")) > 1:
+            date, end = date.split(" – ") 
+            date = dateparser.parse(date)
+            event['start'] = date
+            end = dateparser.parse(end)
+            date = date.replace(hour=end.hour, minute=end.minute)
+            event['end'] = date
 
         yield event
 
