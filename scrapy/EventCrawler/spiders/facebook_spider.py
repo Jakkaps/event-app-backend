@@ -2,6 +2,7 @@ import scrapy
 import datetime
 from items import Event
 import dateparser 
+import logging
 
 class FacebookSpider(scrapy.Spider):
     name = "facebook"
@@ -47,7 +48,7 @@ class FacebookSpider(scrapy.Spider):
 
         # Get's two dates, one with the full start and one with only the hours of the end
         date = response.xpath(".//div[@class='_2ycp _5xhk']/text()").get()
-        print("THIS WAS THE DATE RECORDED:" + date)
+        logging.debug("THIS WAS THE DATE RECORDED: " + date)
         if len(date.split(" – ")) > 1:
             date, end = date.split(" – ") 
             date = dateparser.parse(date)
