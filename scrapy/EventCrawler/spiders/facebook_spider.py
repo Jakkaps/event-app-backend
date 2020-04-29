@@ -47,12 +47,26 @@ class FacebookSpider(scrapy.Spider):
         event['type'] = Event.discern_type(None, event['name'], event['description'])
 
         # Get's two dates, one with the full start and one with only the hours of the end
-        date, end = response.xpath(".//div[@class='_2ycp _5xhk']/text()").get().replace('–', '-').split('-') # Replace weird virgin – with chad -
-        date = dateparser.parse(date)
-        event['start'] = date
-        end = dateparser.parse(end)
-        date = date.replace(hour=end.hour, minute=end.minute)
-        event['end'] = date
+        date = response.xpath(".//div[@class='_2ycp _5xhk']/text()").get()
+        logging.debug('THIS WAS THE DATE FOR THE FACEBOOK EVENT: ' + date)
+        if 'from' not in date:
+            start, end = date.replace('–', '-').split('-') # Replace weird virgin – with chad -
+            logging.debug('START ' + start + ' END ' + end)
+            start = dateparser.parse(date)
+            event['start'] = start
+            end = dateparser.parse(end)
+            end = start.replace(hour=end.hour, minute=end.minute)
+            event['end'] = end
+        else:
+            date, hours = date.split(' from ')
+            start, end = hours.split('-')
+
+            date = dateparser.parse(date)
+            start = dateparser.parse(start)
+            end = dateparser.parse(end)
+
+            event['start'] = date.replace(hour=start.hour, minute=start.minute)
+            event['end'] = date.replace(hour=end.hour, minute=end.minute)
 
         yield event
 
