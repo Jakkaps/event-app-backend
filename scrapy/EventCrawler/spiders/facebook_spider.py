@@ -47,10 +47,7 @@ class FacebookSpider(scrapy.Spider):
         event['type'] = Event.discern_type(None, event['name'], event['description'])
 
         # Get's two dates, one with the full start and one with only the hours of the end
-        date = response.xpath(".//div[@class='_2ycp _5xhk']/text()").get()
-        logging.debug("THIS WAS THE DATE RECORDED: " + date)
-        split_character = " – " if " – " in date else "-" # For some reason on linux systems the date is represented with a short - not a –-
-        date, end = date.split(split_character) 
+        date, end = response.xpath(".//div[@class='_2ycp _5xhk']/text()").get().replace('–', '-').split('-') # Replace weird virgin – with chad -
         date = dateparser.parse(date)
         event['start'] = date
         end = dateparser.parse(end)
