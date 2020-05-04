@@ -73,7 +73,35 @@ class DatabaseHandler(object):
         self.db.close()
         return hosts
 
-    def search(self, search_string) -> [Event]:
+
+    def search(self, query:str) -> [Event]:
+        """
+        Searches the database for the best matches to the query
+        """
+
+        sql_query = """SELECT * FROM events WHERE
+        MATCH(name, host, description, location)
+        AGAINST(? IN BOOLEAN MODE);"""
+
+        search_string = "".join(map(lambda x: f"*{x}*", query.split(" ")))
+
+        self.connect()
+        cursor = self.db.cursor(prepared=True)
+        cursor.execute(sql_query, (search_string,))
+
+        events = []
+        for e in cursor:
+            print(e)
+            e = list(e[1:])
+            event = Event(*e)
+            events.append(event)
+        cursor.close()
+
+        self.db.close()
+
+        return events
+
+    def old_search(self, search_string) -> [Event]:
         """
         Returns all events where the string matches either the
         - name
