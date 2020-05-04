@@ -14,5 +14,6 @@ CREATE TABLE events (
        study_program VARCHAR(200),
        class_year INTEGER,
        image_source VARCHAR(400),
-       UNIQUE (name, host)
+       UNIQUE (name, host),
+       FULLTEXT(name, host, description, location)
 );
