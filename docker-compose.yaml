@@ -72,6 +72,7 @@ services:
       - selenium
     environment:
       - EVENT_DB_HOST=event_db
+      - ELASTIC=elastic
       - EVENT_DB_PWD=${EVENT_DB_PWD}
       - EVENT_DB_PORT=3306
     networks:

@@ -4,7 +4,8 @@ requires = [
     'scrapy',
     'mysql-connector-python',
     'selenium',
-    'dateparser'
+    'dateparser',
+    'elasticsearch'
 ]
 
 setup(

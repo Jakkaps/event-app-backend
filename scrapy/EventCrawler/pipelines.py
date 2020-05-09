@@ -5,6 +5,7 @@
 from .items import Event
 import os
 import mysql.connector
+from elasticsearch import Elasticsearch
 
 class EventcrawlerPipeline(object):
     def open_spider(self, item):
@@ -17,6 +18,8 @@ class EventcrawlerPipeline(object):
         db_port = os.environ.get('EVENT_DB_PORT', "3307")
         db_user = "root"
 
+
+
         self.db = mysql.connector.connect(
             host=db_host,
             port=db_port,
@@ -26,6 +29,10 @@ class EventcrawlerPipeline(object):
             auth_plugin='mysql_native_password'
         )
 
+
+        # Experimental elastic search stuff
+        elastic_host = os.environ.get('ELASTIC', 'localhost')
+        self.es = Elasticsearch(elastic_host)
 
         
     
@@ -63,6 +70,14 @@ class EventcrawlerPipeline(object):
         cursor.execute(query)
         cursor.close()
         self.db.commit()
+
+
+        json_event = event.__dict__ 
+
+
+        es.update_by_query("events", f"name={event['name']}")
+        
+        
 
         return event
     
