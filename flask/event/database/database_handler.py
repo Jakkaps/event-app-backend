@@ -32,7 +32,7 @@ class DatabaseHandler(object):
         query = "SELECT * FROM events"
 
         # Find all the nonempty values that should be filtered for
-        filter_values = [value for value in filters.values() if value != ""]
+        filter_values = [f"%{value}%" for value in filters.values() if value != ""]
 
         # If any filters applicable add them to the query
         if len(filter_values) != 0:
