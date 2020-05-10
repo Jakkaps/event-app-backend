@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_cors import CORS
-from event.database.database_handler import DatabaseHandler
+from event_app.database.database_handler import DatabaseHandler
 import os
 
 app = Flask(__name__)
@@ -14,4 +14,4 @@ db_pwd = os.environ.get("EVENT_DB_PWD")
 
 database_handler = DatabaseHandler(db_host, db_port, db_user, db_pwd)
 
-import event.endpoints
+import event_app.endpoints

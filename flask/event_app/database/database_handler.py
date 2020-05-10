@@ -1,5 +1,5 @@
 import mysql.connector
-from event.event import Event
+from event_app.event import Event
 
 class DatabaseHandler(object):
     def __init__(self, host, port, user, password):

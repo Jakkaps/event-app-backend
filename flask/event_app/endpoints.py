@@ -1,6 +1,6 @@
-from event.app import app, database_handler
+from event_app.app import app, database_handler
 from flask import jsonify, request
-from event.event import Event
+from event_app.event import Event
 
 
 @app.route('/get_events')
