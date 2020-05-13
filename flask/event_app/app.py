@@ -3,6 +3,8 @@ from flask_cors import CORS
 from event_app.database.database_handler import DatabaseHandler
 import os
 
+from event.event_storage import EventStorage
+
 app = Flask(__name__)
 CORS(app)
 
