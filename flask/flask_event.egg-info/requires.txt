@@ -1,0 +1,5 @@
+flask
+wheel
+flask-cors
+mysql-connector-python
+uwsgi
