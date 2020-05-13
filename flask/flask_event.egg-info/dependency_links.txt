@@ -1,1 +1,0 @@
-file:///Users/oyvind/Documents/programming/projects/web/event-app-backendevent/event#egg=event-py3.7
