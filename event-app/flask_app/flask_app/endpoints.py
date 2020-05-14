@@ -83,5 +83,12 @@ def get_hosts():
     Returns a list of all hosts with events in the database
     """
     hosts = event_storage.get_all_hosts()
-    print(hosts)
     return jsonify(hosts)
+
+
+@app.route('/get_types')
+def get_types():
+    """
+    Returns a list of all types of events in the db
+    """
+    return jsonify(event_storage.get_all_types())

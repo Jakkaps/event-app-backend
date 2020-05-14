@@ -99,6 +99,20 @@ class EventStorage():
         self.db.close()
         return hosts
 
+    def get_all_types(self) -> [str]:
+        """Returns a list of all unique types from the database"""
+
+        self.connect_db()
+        query = "SELECT DISTINCT type FROM events"
+        cursor = self.db.cursor()
+        cursor.execute(query)
+
+        types = [t[0] for t in cursor]
+        print(types)
+
+        self.db.close()
+        return types
+
     def search(self):
         """
         Returns all events where the string matches either the
