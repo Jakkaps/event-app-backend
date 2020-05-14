@@ -27,6 +27,7 @@ def get_events():
         "class_year",
         "study_program",
         "start",
+        "end",
         "type"
     ]
 
