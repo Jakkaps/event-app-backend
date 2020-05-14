@@ -5,7 +5,7 @@ import time
 import argparse
 
 #Import all spiders
-from spiders import abakus_spider, samfundet_spider, facebook_spider
+from scraper.EventCrawler.spiders import abakus_spider, samfundet_spider, facebook_spider
 
 if __name__ == "__main__":
 

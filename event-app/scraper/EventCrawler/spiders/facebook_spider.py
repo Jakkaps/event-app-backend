@@ -1,6 +1,6 @@
 import scrapy
 import datetime
-from items import Event
+from scraper.EventCrawler.items import EventItem
 import dateparser 
 import logging
 
@@ -36,17 +36,17 @@ class FacebookSpider(scrapy.Spider):
 
     
     def parse_event(self, response, study_program):
-        event = Event()
+        event_item = EventItem()
  
-        event['name'] = response.xpath(".//h1[@data-testid='event-permalink-event-name']/text()").get()
-        event['description'] = '\n\n'.join(response.xpath(".//div[@class='_63ew']/span/text()").getall())
-        event['host'] = response.xpath(".//div[@data-testid='event_permalink_feature_line']/@content").get()
-        event['location'] = response.xpath(".//span[@class='_5xhk']/text()").get()
-        event['url'] = response.request.url 
-        event['study_program'] = study_program
-        event['image_source'] = response.xpath(".//div[@class='uiScaledImageContainer _3ojl']/img/@src").get()
+        event_item['name'] = response.xpath(".//h1[@data-testid='event-permalink-event-name']/text()").get()
+        event_item['description'] = '\n'.join(response.xpath(".//div[@class='_63ew']/span/text()").getall())
+        event_item['host'] = response.xpath(".//div[@data-testid='event_permalink_feature_line']/@content").get()
+        event_item['location'] = response.xpath(".//span[@class='_5xhk']/text()").get()
+        event_item['url'] = response.request.url 
+        event_item['study_program'] = study_program
+        event_item['image_source'] = response.xpath(".//div[@class='uiScaledImageContainer _3ojl']/img/@src").get()
 
-        event['type'] = Event.discern_type(None, event['name'], event['description'])
+        event_item['type'] = EventItem.discern_type(None, event_item['name'], event_item['description'])
 
         # Get's two dates, one with the full start and one with only the hours of the end
         date = response.xpath(".//div[@class='_2ycp _5xhk']/text()").get()
@@ -61,10 +61,10 @@ class FacebookSpider(scrapy.Spider):
         start = dateparser.parse(start)
         end = dateparser.parse(end)
 
-        event['start'] = date.replace(hour=start.hour, minute=start.minute)
-        event['end'] = date.replace(hour=end.hour, minute=end.minute)
+        event_item['start'] = date.replace(hour=start.hour, minute=start.minute)
+        event_item['end'] = date.replace(hour=end.hour, minute=end.minute)
 
-        yield event 
+        yield event_item 
 
         
             
