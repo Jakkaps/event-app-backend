@@ -39,7 +39,9 @@ services:
 
 
   flask:
-    build: ./event-app/flask_app
+    build:
+      context: ./event-app
+      dockerfile: Dockerfile-flask
     container_name: flask
     restart: always
     depends_on:
@@ -64,7 +66,9 @@ services:
       - web_nw
 
   scrapy:
-    build: ./event-app/scrapy
+    build:
+      context: ./event-app
+      dockerfile: Dockerfile-scraper
     container_name: scrapy
     restart: always
     depends_on:

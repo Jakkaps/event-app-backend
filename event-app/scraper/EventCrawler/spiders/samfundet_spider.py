@@ -1,7 +1,7 @@
 import scrapy
 import datetime
 import dateparser
-from scraper.EventCrawler.items import Event 
+from scraper.EventCrawler.items import EventItem 
 
 class SamfundetSpider(scrapy.Spider):
     name = "samfundet"
@@ -22,29 +22,29 @@ class SamfundetSpider(scrapy.Spider):
             yield scrapy.Request(url=url, callback=self.parse_event, cb_kwargs=dict(name=name, url=url))
     
     def parse_event(self, response, url, name):
-        event = Event()
+        event_item = EventItem()
 
-        event["name"] = name
-        event["url"] = url
-        event["location"] = response.xpath(".//td[text()='Lokale']/following-sibling::td/a/text()").get()
-        event["host"] = "Samfundet"
+        event_item["name"] = name
+        event_item["url"] = url
+        event_item["location"] = response.xpath(".//td[text()='Lokale']/following-sibling::td/a/text()").get()
+        event_item["host"] = "Samfundet"
 
         image_style = response.xpath(".//div[@class='banner-image'][1]/@style").get()
-        event["image_source"] = "https://samfundet.no" + image_style.split("url(")[1][:-1]
+        event_item["image_source"] = "https://samfundet.no" + image_style.split("url(")[1][:-1]
 
         # The date is one field, and start and end times is one field
         date = dateparser.parse(response.xpath(".//td[text()='Dato']/following-sibling::td/text()").get().strip())
         start, end = response.xpath(".//td[text()='Tid']/following-sibling::td/text()").get().strip().replace('.', ':').split('-')
         start = dateparser.parse(start)
         end = dateparser.parse(end)
-        event["start"] = date.replace(hour=start.hour, minute=start.minute)
-        event["end"] = date.replace(hour=end.hour, minute=end.minute)
+        event_item["start"] = date.replace(hour=start.hour, minute=start.minute)
+        event_item["end"] = date.replace(hour=end.hour, minute=end.minute)
 
         description = ""
         description += response.xpath(".//p[@class='description-short']/text()").get().strip()
         description += "".join(response.xpath(".//div[@class='description-long']/p/text()").getall())
-        event["description"] = description
+        event_item["description"] = description
 
-        event["type"] = Event.discern_type(None, event["name"], event["description"])
+        event_item["type"] = EventItem.discern_type(None, event_item["name"], event_item["description"])
 
-        yield event
+        yield event_item

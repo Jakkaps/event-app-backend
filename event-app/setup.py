@@ -8,6 +8,7 @@ requires = [
     'selenium',
     'dateparser',
     'elasticsearch',
+    'scrapy'
 ]
 
 setup(

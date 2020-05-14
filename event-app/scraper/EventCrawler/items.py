@@ -7,7 +7,7 @@
 
 import scrapy
 
-class Event(scrapy.Item):
+class EventItem(scrapy.Item):
     name = scrapy.Field()
     description = scrapy.Field()
     start = scrapy.Field()
@@ -35,15 +35,15 @@ class Event(scrapy.Item):
         Returns the type induced from the type, title and description
         """
         # First, check the type itself
-        type = Event.__check_against_keywords(type, strict=True)
+        type = EventItem.__check_against_keywords(type, strict=True)
 
         # Then the title
         if type == None:
-            type = Event.__check_against_keywords(title, strict=True)
+            type = EventItem.__check_against_keywords(title, strict=True)
 
         # Then the description
         if type == None:
-            type = Event.__check_against_keywords(description)
+            type = EventItem.__check_against_keywords(description)
  
         return type if type != None else "Unknown" 
         
@@ -60,14 +60,14 @@ class Event(scrapy.Item):
         
         # Need to track how well it matches any given type
         scores = {}
-        for type in Event.types:
+        for type in EventItem.types:
             scores[type] = 0
 
         # Go through a set of the words and the keywords to see if any match
         words = [x.lower() for x in str.split()]
-        for type in Event.types:
+        for type in EventItem.types:
             for word in words:
-                for keyword in Event.types.get(type):
+                for keyword in EventItem.types.get(type):
                     if strict:
                         if keyword == word:
                             scores[type] = scores[type] + 1

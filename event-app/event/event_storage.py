@@ -134,5 +134,33 @@ class EventStorage():
        
         return events
 
+    def add_or_update_event(event: dict):
+        self.connect_db()
+
+        
+        cursor = self.db.cursor()
+        
+        query = "INSERT INTO events ("
+        keys = list(event.keys())
+        for key in keys:
+            query += f"{key}, "
+        query = query[:-2] + ") "
+
+        query += "VALUES("
+        for key in keys:
+            query += f"'{event[key]}', "
+        query = query[:-2] + ") "
+
+        query += "ON DUPLICATE KEY UPDATE "
+        for key in keys:
+            query += f"{key}='{event[key]}', "
+        query = query[:-2].replace("None", "NULL")
+            
+        cursor.execute(query)
+        cursor.close()
+        self.db.commit()
+        
+        
+
 
 
