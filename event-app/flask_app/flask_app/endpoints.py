@@ -36,19 +36,23 @@ def get_events():
     for key in filter_keys:
         value = request.args.get(key, "")
 
+        values = []
+
         if value != "":
             filter_operator = ""
             if key == "start":
                 filter_operator = FilterOperator.GREATER_THAN
                 value = datetime.strptime(value, "%Y-%m-%d")
+                values = [value]
             elif key == "end":
                 filter_operator = FilterOperator.LESS_THAN
                 value = datetime.strptime(value, "%Y-%m-%d")
+                values = [value]
             else:
                 filter_operator = FilterOperator.LIKE
-                value = f"%{value}%"
+                values = [f"%{val}%" for val in value.split(",")]
 
-            filters.append(EventFilter(key, value, filter_operator))
+            filters.append(EventFilter(key, values, filter_operator))
 
             
 

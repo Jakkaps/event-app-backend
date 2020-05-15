@@ -50,14 +50,26 @@ class EventStorage():
 
         query = "SELECT * FROM events"
 
-        filter_values = []
-        query_filters_values = [filter.value for filter in filters]
+        filter_values = [f.values for f in filters]
+
+        # A bit strange expression, but this should flatten the
+        # list of lists of filtervalues
+        query_filters_values = [y for x in filter_values for y in x]
+        print(query_filters_values)
         if len(filters) != 0:
             query += " WHERE "
 
             # We must separate the query filter and the actual value
             # to prevent SQL injection
-            query_filters = [f"{filter.key} {filter.operator} ?" for filter in filters]
+            query_filters = []
+
+            for f in filters:
+                filter_variations = []
+                for v in f.values:
+                    # Each filter key can have multiple values to check against
+                    # These should be joined by OR and surrounded by parentheses
+                    filter_variations.append(f"{f.key} {f.operator} ?")
+                query_filters.append(f"({' OR '.join(filter_variations)})")
 
             query += " AND ".join(query_filters)
 
@@ -65,13 +77,11 @@ class EventStorage():
 
 
         print(query)
-        print(query_filters_values)
         cursor = self.db.cursor(prepared=True)
         cursor.execute(query, query_filters_values)
 
         events = []
         for e in cursor:
-            print(e)
             e = e[1:]
             event = Event(*e)
             events.append(event)
@@ -108,7 +118,6 @@ class EventStorage():
         cursor.execute(query)
 
         types = [t[0] for t in cursor]
-        print(types)
 
         self.db.close()
         return types
