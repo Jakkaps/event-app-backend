@@ -122,7 +122,7 @@ class EventStorage():
         self.db.close()
         return types
 
-    def search(self):
+    def search(self, search_string):
         """
         Returns all events where the string matches either the
         - name
