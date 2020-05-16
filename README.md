@@ -91,7 +91,14 @@ $ docker-compose up -d --build
 ```
 
 ### Running in Production 
-To start the application run 
+Normally, to deploy new code run
+```bash 
+$ git push prod master
+```
+This is assuming you have set up a git remote `prod` to match the correct destination on the server. 
+The application will automatically rebuild and restart.
+
+If you ever need to restart the application on the server, ssh into it and run
 ```bash
 $ docker-compose up -d --build
 ```
