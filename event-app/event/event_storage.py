@@ -122,6 +122,27 @@ class EventStorage():
         self.db.close()
         return types
 
+    def get_all_study_programs(self) -> [str]:
+        """
+        Returns a list of all study programs mensioned in events in the db
+        """
+        self.connect_db()
+        query = "SELECT DISTINCT study_program FROM events"
+        cursor = self.db.cursor()
+        cursor.execute(query)
+
+        study_programs = []
+        for sp in cursor:
+            if sp[0] != None: 
+                programs = sp[0].split(", ")
+                for program in programs:
+                    study_programs.append(program)
+            
+
+        self.db.close()
+        return study_programs
+
+
     def search(self, search_string):
         """
         Returns all events where the string matches either the

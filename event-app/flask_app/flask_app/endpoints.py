@@ -96,3 +96,12 @@ def get_types():
     Returns a list of all types of events in the db
     """
     return jsonify(event_storage.get_all_types())
+
+
+@app.route("/get_study_programs")
+def get_study_programs():
+    """
+    Returns a list of all study programs mensioned in events in the db
+    """
+    return jsonify(event_storage.get_all_study_programs())
+

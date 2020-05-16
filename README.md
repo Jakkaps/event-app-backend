@@ -34,6 +34,10 @@ Takes no paramters
 Returns a list of all event types that skjerdet.no knows about
 Takes no paramters
 
+### /get_study_programs
+Returns a list of all the study programs metioned in any event skjerdet.no knows about
+Takes no parameters
+
 ## Development 
 To run the project properly you need the following environment variable:
 - `EVENT_DB_PWD`
