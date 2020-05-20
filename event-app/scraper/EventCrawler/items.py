@@ -37,9 +37,35 @@ class EventItem(scrapy.Item):
         'NTNU': ['ntnu', 'norges teknisk-naturvitenskapelige universitet']
     }
 
+    study_programs = {
+        'Datateknologi': ['data', 'datateknologi', 'mtdt', 'abakus'],
+        'Kommunikasjonsteknologi': ['komtek', 'kommunikasjonsteknologi', 'mtkom', 'abakus'],
+        'EMIL': ['energi og miljø', 'emil', 'mtenerg'],
+    }
+
     @staticmethod
     def discern_host(host):
         return EventItem.__check_against_keywords(EventItem.hosts, host, strict=True, allow_many=True)
+
+    @staticmethod
+    def discern_study_program(study_program, host, description):
+        """
+        Returns the study program induced from the study program, host and description
+        """
+
+        # First, check the study program itself
+        study_program = EventItem.__check_against_keywords(EventItem.study_programs, study_program, strict=True, allow_many=True)
+
+        # Then the host
+        if study_program == None:
+            study_program = EventItem.__check_against_keywords(EventItem.study_programs, host, strict=True, allow_many=True)
+
+        # Then the description
+        if study_program == None:
+            study_program = EventItem.__check_against_keywords(EventItem.study_programs, description, allow_many=True)
+ 
+        return study_program if study_program != None else "Ukjent" 
+
 
 
     @staticmethod
@@ -58,7 +84,7 @@ class EventItem(scrapy.Item):
         if type == None:
             type = EventItem.__check_against_keywords(EventItem.types, description)
  
-        return type if type != None else "Unknown" 
+        return type if type != None else "Ukjent" 
     
     @staticmethod
     def __check_against_keywords(keywords, str, strict=False, allow_many=False):
@@ -81,6 +107,7 @@ class EventItem(scrapy.Item):
         for type in keywords:
             for word in words:
                 for keyword in keywords.get(type):
+                    word = word.replace(',', '')
                     if strict:
                         if keyword == word:
                             scores[type] = scores[type] + 1

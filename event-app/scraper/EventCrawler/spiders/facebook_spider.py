@@ -43,7 +43,7 @@ class FacebookSpider(scrapy.Spider):
         event_item['host'] = EventItem.discern_host(response.xpath(".//div[@data-testid='event_permalink_feature_line']/@content").get())
         event_item['location'] = response.xpath(".//span[@class='_5xhk']/text()").get()
         event_item['url'] = response.request.url 
-        event_item['study_program'] = study_program
+        event_item['study_program'] = EventItem.discern_study_program(study_program, event_item['host'], event_item['description'])
         event_item['image_source'] = response.xpath(".//div[@class='uiScaledImageContainer _3ojl']/img/@src").get()
 
         event_item['type'] = EventItem.discern_type(None, event_item['name'], event_item['description'])

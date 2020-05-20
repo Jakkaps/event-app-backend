@@ -46,5 +46,6 @@ class SamfundetSpider(scrapy.Spider):
         event_item["description"] = description
 
         event_item["type"] = EventItem.discern_type(None, event_item["name"], event_item["description"])
+        event_item["study_program"] = EventItem.discern_study_program(None, event_item["host"], event_item["description"])
 
         yield event_item

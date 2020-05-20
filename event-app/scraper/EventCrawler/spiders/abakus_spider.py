@@ -47,7 +47,7 @@ class AbakusSpider(scrapy.Spider):
         if end != None:
             event_item['end'] = datetime.datetime.fromtimestamp(int(end)/1000.0).astimezone(pytz.timezone('Europe/Oslo'))
 
-        event_item['study_program'] = "MTDT, MTKOM"
         event_item['host'] = "Abakus"
+        event_item['study_program'] = EventItem.discern_study_program('MTDT, MTKOM', event_item['host'], event_item['description'])
 
         yield event_item
