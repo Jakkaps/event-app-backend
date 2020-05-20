@@ -105,9 +105,12 @@ class EventStorage():
         hosts = []
 
         for host in cursor:
-            hosts.append(host[0])
+            sub_hosts = host[0].split("")
+            for sub_host in sub_hosts:
+                hosts.append(sub_host)
+
         self.db.close()
-        return hosts
+        return list(set(hosts)) #This makes sure values are unique
 
     def get_all_types(self) -> [str]:
         """Returns a list of all unique types from the database"""
@@ -134,13 +137,13 @@ class EventStorage():
         study_programs = []
         for sp in cursor:
             if sp[0] != None: 
-                programs = sp[0].split(", ")
+                programs = sp[0].split(",")
                 for program in programs:
                     study_programs.append(program)
             
 
         self.db.close()
-        return study_programs
+        return list(set(study_programs)) #This makes sure values are unique
 
 
     def search(self, search_string):
