@@ -29,29 +29,42 @@ class EventItem(scrapy.Item):
         'Konkurranse': ['quiz', 'konkurranse', 'premie', 'vinne', 'hackathon']
     }
 
+    hosts = {
+        'Abakus': ['abakus', 'linjeforeningen abakus', 'datateknologi og kommunikasjonsteknologi'],
+        'Samfundet': ['studentersamfundet', 'samfundet'],
+        'EMIL': ['energi og miljø', 'emil'],
+        'Omega': ['omega'],
+        'NTNU': ['ntnu', 'norges teknisk-naturvitenskapelige universitet']
+    }
+
+    @staticmethod
+    def discern_host(host):
+        return EventItem.__check_against_keywords(EventItem.hosts, host, strict=True, allow_many=True)
+
+
     @staticmethod
     def discern_type(type, title, description):
         """
         Returns the type induced from the type, title and description
         """
         # First, check the type itself
-        type = EventItem.__check_against_keywords(type, strict=True)
+        type = EventItem.__check_against_keywords(EventItem.types, type, strict=True)
 
         # Then the title
         if type == None:
-            type = EventItem.__check_against_keywords(title, strict=True)
+            type = EventItem.__check_against_keywords(EventItem.types, title, strict=True)
 
         # Then the description
         if type == None:
-            type = EventItem.__check_against_keywords(description)
+            type = EventItem.__check_against_keywords(EventItem.types, description)
  
         return type if type != None else "Unknown" 
-        
     
     @staticmethod
-    def __check_against_keywords(str, strict=False):
+    def __check_against_keywords(keywords, str, strict=False, allow_many=False):
         """
-        Takes a list of words and returns the type with a matching keyword. If the boolean strict is true, the search will require an excact match
+        Takes a list of words and returns the type with a matching keyword. 
+        If the boolean strict is true, the search will require an excact match. If allow_many is true, then a comma seperated string of all matches is returend
         """
 
         # If nothing is passed, theres no need to do anything
@@ -60,14 +73,14 @@ class EventItem(scrapy.Item):
         
         # Need to track how well it matches any given type
         scores = {}
-        for type in EventItem.types:
+        for type in keywords:
             scores[type] = 0
 
         # Go through a set of the words and the keywords to see if any match
         words = [x.lower() for x in str.split()]
-        for type in EventItem.types:
+        for type in keywords:
             for word in words:
-                for keyword in EventItem.types.get(type):
+                for keyword in keywords.get(type):
                     if strict:
                         if keyword == word:
                             scores[type] = scores[type] + 1
@@ -77,8 +90,18 @@ class EventItem(scrapy.Item):
                         elif keyword in word:
                             scores[type] = scores[type] + 1
        
-        # Return the type with the largest score, but only if one of them != 0
-        v=list(scores.values())
-        k=list(scores.keys())
-        best_match = k[v.index(max(v))]
-        return best_match if scores[best_match] != 0 else None
+
+        if allow_many:
+            # Return all keys that had some sort of match
+            hosts = ''
+            for item in scores.items():
+                if item[1] > 0:
+                    hosts += item[0] + ','
+            return hosts[:-1] # Take away last comma
+
+        else:
+            # Return the type with the largest score, but only if one of them != 0
+            v=list(scores.values())
+            k=list(scores.keys())
+            best_match = k[v.index(max(v))]
+            return best_match if scores[best_match] != 0 else None

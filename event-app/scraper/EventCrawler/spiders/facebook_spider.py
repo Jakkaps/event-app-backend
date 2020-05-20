@@ -40,7 +40,7 @@ class FacebookSpider(scrapy.Spider):
  
         event_item['name'] = response.xpath(".//h1[@data-testid='event-permalink-event-name']/text()").get()
         event_item['description'] = '\n'.join(response.xpath(".//div[@class='_63ew']/span/text()").getall())
-        event_item['host'] = response.xpath(".//div[@data-testid='event_permalink_feature_line']/@content").get()
+        event_item['host'] = EventItem.discern_host(response.xpath(".//div[@data-testid='event_permalink_feature_line']/@content").get())
         event_item['location'] = response.xpath(".//span[@class='_5xhk']/text()").get()
         event_item['url'] = response.request.url 
         event_item['study_program'] = study_program
