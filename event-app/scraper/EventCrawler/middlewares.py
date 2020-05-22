@@ -14,7 +14,7 @@ import logging, sys
 
 options = Options()
 options.page_load_strategy = 'eager'
-driver = webdriver.Remote("http://selenium:4444/wd/hub", options=options, desired_capabilities=DesiredCapabilities.CHROME)
+driver = webdriver.Remote("http://localhost:4444/wd/hub", options=options, desired_capabilities=DesiredCapabilities.CHROME)
 driver.set_page_load_timeout(5000)
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 

@@ -11,8 +11,8 @@
 
 BOT_NAME = 'EventCrawler'
 
-SPIDER_MODULES = ['EventCrawler.spiders']
-NEWSPIDER_MODULE = 'EventCrawler.spiders'
+SPIDER_MODULES = ['spiders']
+NEWSPIDER_MODULE = 'spiders'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
@@ -53,7 +53,7 @@ ROBOTSTXT_OBEY = False
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-    'EventCrawler.middlewares.EventcrawlerDownloaderMiddleware': 543,
+    'middlewares.EventcrawlerDownloaderMiddleware': 543,
 }
 
 # Enable or disable extensions
@@ -65,7 +65,7 @@ DOWNLOADER_MIDDLEWARES = {
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'EventCrawler.pipelines.EventcrawlerPipeline': 300,
+    'pipelines.EventcrawlerPipeline': 300,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

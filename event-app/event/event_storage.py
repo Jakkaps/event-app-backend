@@ -1,13 +1,18 @@
 import mysql.connector
 import os
+from elasticsearch import Elasticsearch
 from event import Event
 from event import EventFilter
+
+import logging
 
 host = os.environ.get("EVENT_DB_HOST", "localhost")
 port = os.environ.get("EVENT_DB_PORT", "3307")
 user = "root"
 pwd = os.environ.get("EVENT_DB_PWD")
 db_name = "event_app"
+
+es_host = os.environ.get("ELASTIC_HOST", "localhost")
 
 
 class EventStorage():
@@ -22,6 +27,9 @@ class EventStorage():
             database=db_name,
             auth_plugin='mysql_native_password'
         )
+
+        self.es = Elasticsearch([{"host": es_host}])
+        self.index_name = "events"
 
     def get_all_events(self) -> [Event]:
         """Returns a list of all stored events"""
@@ -181,12 +189,35 @@ class EventStorage():
        
         return events
 
-    def add_or_update_event(event: dict):
+    def get_event_id(self, event: Event) -> str:
+        """
+        Returns the ID of a given event from the database
+        """
         self.connect_db()
+        cursor = self.db.cursor()
+
+        query = f"SELECT id FROM events WHERE name = '{event.name}' AND host = '{event.host}'"
+        cursor.execute(query)
+        result = ""
+        for res in cursor:
+            result = res[0]
+        cursor.close()
+        self.db.close()
+        return result
+
+
+    def add_or_update_event(self, event: dict):
+        """
+        Adds the given event dictionary to the database, and the elasticsearch index
+
+        If the event is already there it will update
+        """
+        self.connect_db()
+        
+        cursor = self.db.cursor(buffered=True)
 
         
-        cursor = self.db.cursor()
-        
+        # Inserting into the database
         query = "INSERT INTO events ("
         keys = list(event.keys())
         for key in keys:
@@ -202,12 +233,21 @@ class EventStorage():
         for key in keys:
             query += f"{key}='{event[key]}', "
         query = query[:-2].replace("None", "NULL")
+
             
         cursor.execute(query)
         cursor.close()
         self.db.commit()
-        
-        
+        self.db.close()
+
+        # Adding to elasticsearch
+        id = self.get_event_id(Event(**event))
+
+        index_body = {
+            "name": event['name'],
+            "host": event['host']
+        }
 
 
+        self.es.index(index=self.index_name, id=id, refresh=True, body=index_body)
 
