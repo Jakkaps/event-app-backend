@@ -214,41 +214,7 @@ class EventStorage():
         return list(set(study_programs)) #This makes sure values are unique
 
 
-    def search(self, search_string):
-        """
-        Returns all events where the string matches either the
-        - name
-        - host
-        - location
-        - description
-        - type
-        """
-
-        query = """SELECT * FROM events WHERE
-        name LIKE ?
-        OR host LIKE ?
-        OR description LIKE ?
-        OR location LIKE ?
-        OR type LIKE ?"""
-
-        test = "SELECT * FROM events WHERE name = %s"
-
-        self.connect_db()
-        cursor = self.db.cursor(prepared=True)
-        cursor.execute(query, [f"%{search_string}%" for i in range(5)])
-        # cursor.execute(test, (search_string,))
-        events = []
-        for e in cursor:
-            e = list(e[1:])
-            event = Event(*e)
-            events.append(event)
-        cursor.close()
-
-        self.db.close()
-       
-        return events
-
-    def elastic_search(self, query: str):
+    def search(self, query: str):
         self.connect_es()
         self.connect_db()
         search_result = self.es.search(index="events", body={

@@ -81,11 +81,6 @@ def search():
 
     return jsonify(events)
 
-@app.route('/better_search')
-def better_search():
-    query = request.args.get('query')
-    events = [e.__dict__ for e in event_storage.elastic_search(query)]
-    return jsonify(events)
     
 @app.route('/get_hosts')
 def get_hosts():
