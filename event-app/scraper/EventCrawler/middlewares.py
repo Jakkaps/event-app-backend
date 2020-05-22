@@ -11,10 +11,12 @@ from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.chrome.options import Options
 import logging, sys
+import os
 
 options = Options()
 options.page_load_strategy = 'eager'
-driver = webdriver.Remote("http://localhost:4444/wd/hub", options=options, desired_capabilities=DesiredCapabilities.CHROME)
+selenium_host = os.environ.get("SELENIUM_HOST", "localhost")
+driver = webdriver.Remote(f"http://{selenium_host}:4444/wd/hub", options=options, desired_capabilities=DesiredCapabilities.CHROME)
 driver.set_page_load_timeout(5000)
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 

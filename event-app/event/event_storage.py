@@ -33,6 +33,63 @@ class EventStorage():
             auth_plugin='mysql_native_password'
         )
 
+    def set_es_mapping(self):
+        """
+        Makes sure the index has the right mapping with correct analyzers
+        """
+        self.connect_es()
+        mapping_data = {
+            "settings": {
+                "analysis": {
+                    "filter": {
+                        "autocomplete_filter": {
+                            "type": "edge_ngram",
+                            "min_gram": 1,
+                            "max_gram": 20
+                        }
+                    },
+                    "analyzer": {
+                        "autocomplete": { 
+                            "type": "custom",
+                            "tokenizer": "standard",
+                            "filter": [
+                                "lowercase",
+                                "autocomplete_filter"
+                            ]
+                        }
+                    }
+                }
+            },
+            "mappings": {
+                "_doc": {
+                    "properties": {
+                        "name": {
+                            "type": "text",
+                            "analyzer": "autocomplete", 
+                            "search_analyzer": "standard" 
+                        },
+                        "host": {
+                            "type": "text",
+                            "analyzer": "autocomplete", 
+                            "search_analyzer": "standard" 
+                        },
+                        "description": {
+                            "type": "text",
+                            "analyzer": "autocomplete", 
+                            "search_analyzer": "standard" 
+                        },
+                        "type": {
+                            "type": "keyword",
+                            "analyzer": "autocomplete", 
+                            "search_analyzer": "standard" 
+                        }
+                    }
+                }
+            }
+        }
+
+        self.es.index(index="evets", body=mapping_data)
+
 
     def get_all_events(self) -> [Event]:
         """Returns a list of all stored events"""
@@ -182,7 +239,6 @@ class EventStorage():
         # cursor.execute(test, (search_string,))
         events = []
         for e in cursor:
-            print(e)
             e = list(e[1:])
             event = Event(*e)
             events.append(event)
@@ -194,15 +250,35 @@ class EventStorage():
 
     def elastic_search(self, query: str):
         self.connect_es()
-        return self.es.search(index="events", body={
+        self.connect_db()
+        search_result = self.es.search(index="events", body={
             "query": {
                 "multi_match": {
                     "query": query,
                     "fields": ["*"],
-                    "fuzziness": "AUTO"
+                    "fuzziness": "AUTO",
                 }
             }
-        });
+        })["hits"]["hits"];
+
+        events = []
+
+        for result in search_result:
+            cursor = self.db.cursor()
+            sql_query = f"SELECT * FROM events WHERE id = {result['_id']}"
+            cursor.execute(sql_query)
+            for e in cursor:
+                e = e[1:]
+                event = Event(*e)
+                events.append(event)
+            cursor.close()
+
+        self.db.close()
+        return events
+                
+
+
+
 
     def get_event_id(self, event: Event) -> str:
         """
@@ -263,7 +339,6 @@ class EventStorage():
             "name": event['name'],
             "host": event['host'],
             "description": event['description'],
-            "start": event['start'],
             "type": event['type'],
         }
 

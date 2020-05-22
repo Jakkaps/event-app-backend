@@ -50,9 +50,11 @@ services:
       - EVENT_DB_HOST=event_db
       - EVENT_DB_PWD=${EVENT_DB_PWD}
       - EVENT_DB_PORT=3306
+      - ELASTIC_HOST=elastic
     networks:
       - web_nw
       - db_nw
+      - elastic
 
   nginx:
     build: ./nginx
@@ -76,12 +78,14 @@ services:
       - selenium
     environment:
       - EVENT_DB_HOST=event_db
-      - ELASTIC=elastic
+      - ELASTIC_HOST=elastic
       - EVENT_DB_PWD=${EVENT_DB_PWD}
       - EVENT_DB_PORT=3306
+      - SELENIUM_HOST=selenium
     networks:
       - db_nw
       - scrape_nw
+      - elastic
     
   selenium:
     image: selenium/standalone-chrome:latest
