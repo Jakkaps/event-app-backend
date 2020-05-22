@@ -16,6 +16,11 @@ es_host = os.environ.get("ELASTIC_HOST", "localhost")
 
 
 class EventStorage():
+
+    def connect_es(self):
+        self.es = Elasticsearch([{"host": es_host}])
+        self.index_name = "events"
+    
     def connect_db(self):
         """Connects to the database
         Used internally"""
@@ -28,8 +33,6 @@ class EventStorage():
             auth_plugin='mysql_native_password'
         )
 
-        self.es = Elasticsearch([{"host": es_host}])
-        self.index_name = "events"
 
     def get_all_events(self) -> [Event]:
         """Returns a list of all stored events"""
@@ -189,6 +192,18 @@ class EventStorage():
        
         return events
 
+    def elastic_search(self, query: str):
+        self.connect_es()
+        return self.es.search(index="events", body={
+            "query": {
+                "multi_match": {
+                    "query": query,
+                    "fields": ["*"],
+                    "fuzziness": "AUTO"
+                }
+            }
+        });
+
     def get_event_id(self, event: Event) -> str:
         """
         Returns the ID of a given event from the database
@@ -213,6 +228,7 @@ class EventStorage():
         If the event is already there it will update
         """
         self.connect_db()
+        self.connect_es()
         
         cursor = self.db.cursor(buffered=True)
 
@@ -249,7 +265,6 @@ class EventStorage():
             "description": event['description'],
             "start": event['start'],
             "type": event['type'],
-            "location": event["location"],
         }
 
 
