@@ -31,7 +31,7 @@ if __name__ == "__main__":
 
 
     if not args.debug:
-        time.sleep(30)
+        time.sleep(60)
         while True:
             run_crawler()
             time.sleep(3600)
