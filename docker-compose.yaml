@@ -76,6 +76,7 @@ services:
     depends_on:
       - event_db
       - selenium
+      - elastic
     environment:
       - EVENT_DB_HOST=event_db
       - ELASTIC_HOST=elastic
