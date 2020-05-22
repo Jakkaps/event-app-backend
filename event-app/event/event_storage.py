@@ -245,7 +245,11 @@ class EventStorage():
 
         index_body = {
             "name": event['name'],
-            "host": event['host']
+            "host": event['host'],
+            "description": event['description'],
+            "start": event['start'],
+            "type": event['type'],
+            "location": event["location"],
         }
 
 
