@@ -18,6 +18,7 @@ es_host = os.environ.get("ELASTIC_HOST", "localhost")
 class EventStorage():
 
     def connect_es(self):
+        logging.debug("GOING TO CONNECT TO ES ON HOST: " + es_host)
         self.es = Elasticsearch([{"host": es_host}])
         self.index_name = "events"
     
