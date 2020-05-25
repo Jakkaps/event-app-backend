@@ -244,6 +244,13 @@ class EventStorage():
         return events
                 
 
+    def getSuggestions(self, query):
+        """
+        Returns a list of suggestions for what the user might want to search on
+        based on the query and tha data we have indexed
+        """
+        return []
+
 
 
 

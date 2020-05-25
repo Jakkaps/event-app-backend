@@ -81,6 +81,17 @@ def search():
 
     return jsonify(events)
 
+
+@app.route('/suggestions')
+def suggestions():
+    """
+    Returns a list of suggestions for what the user might want to
+    search for, based on the query url parameter
+    """
+    query = request.args.get('query')
+    if not query is None:
+        return event_storage.getSuggestions(query)
+
     
 @app.route('/get_hosts')
 def get_hosts():
