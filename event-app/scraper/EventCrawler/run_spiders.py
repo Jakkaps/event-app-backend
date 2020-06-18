@@ -2,6 +2,7 @@ import scrapy
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 from scrapy.settings import Settings
+from event import EventStorage
 import time
 import os
 import argparse
@@ -10,6 +11,9 @@ import argparse
 from scraper.EventCrawler.spiders import abakus_spider, samfundet_spider, facebook_spider
 
 def run_crawler(): 
+
+    event_storage = EventStorage()
+    event_storage.set_es_mapping()
     settings = Settings()
     os.environ['SCRAPY_SETTINGS_MODULE'] = 'settings'
     settings_module_path = os.environ['SCRAPY_SETTINGS_MODULE']

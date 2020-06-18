@@ -16,7 +16,6 @@ class EventcrawlerPipeline(object):
         Called when the spider opens. 
         """
         self.event_storage = EventStorage()
-        self.event_storage.set_es_mapping()
 
     def close_spider(self, spider):
         """

@@ -12,6 +12,7 @@ user = "root"
 pwd = os.environ.get("EVENT_DB_PWD")
 db_name = "event_app"
 
+
 es_host = os.environ.get("ELASTIC_HOST", "localhost")
 
 
@@ -39,57 +40,76 @@ class EventStorage():
         Makes sure the index has the right mapping with correct analyzers
         """
         self.connect_es()
-        mapping_data = {
-            "settings": {
-                "analysis": {
-                    "filter": {
-                        "autocomplete_filter": {
-                            "type": "edge_ngram",
-                            "min_gram": 1,
-                            "max_gram": 20
-                        }
-                    },
-                    "analyzer": {
-                        "autocomplete": { 
-                            "type": "custom",
-                            "tokenizer": "standard",
-                            "filter": [
-                                "lowercase",
-                                "autocomplete_filter"
-                            ]
-                        }
+
+        settings = {
+            "analysis": {
+                "filter": {
+                    "autocomplete_filter": {
+                        "type": "edge_ngram",
+                        "min_gram": 1,
+                        "max_gram": 20,
+                        "token_chars": [
+                            "letter",
+                            "digit"
+                        ]
                     }
-                }
-            },
-            "mappings": {
-                "_doc": {
-                    "properties": {
-                        "name": {
-                            "type": "text",
-                            "analyzer": "autocomplete", 
-                            "search_analyzer": "standard" 
-                        },
-                        "host": {
-                            "type": "text",
-                            "analyzer": "autocomplete", 
-                            "search_analyzer": "standard" 
-                        },
-                        "description": {
-                            "type": "text",
-                            "analyzer": "autocomplete", 
-                            "search_analyzer": "standard" 
-                        },
-                        "type": {
-                            "type": "keyword",
-                            "analyzer": "autocomplete", 
-                            "search_analyzer": "standard" 
-                        }
+                },
+                "analyzer": {
+                    "autocomplete": { 
+                        "type": "custom",
+                        "tokenizer": "standard",
+                        "filter": [
+                            "lowercase",
+                            "autocomplete_filter"
+                        ]
                     }
                 }
             }
         }
 
-        self.es.index(index="evets", body=mapping_data)
+        mappings = {
+            "properties": {
+                "name": {
+                    "type": "text",
+                    "analyzer": "autocomplete", 
+                    # "search_analyzer": "standard" 
+                    },
+                "host": {
+                    "type": "text",
+                    "analyzer": "autocomplete", 
+                    "search_analyzer": "standard" 
+                },
+                "description": {
+                    "type": "text",
+                    "analyzer": "autocomplete", 
+                    "search_analyzer": "standard" 
+                },
+                "type": {
+                    "type": "keyword",
+                },
+                "suggest": {
+                    "type": "completion",
+                }
+            }
+        }
+
+        body = {
+            "settings": settings,
+            "mappings": mappings
+        }
+
+        index_exists = self.es.indices.exists("events")
+        if index_exists:
+            settings_changed = self.es.indices.get_settings("events")["events"]["settings"] == settings 
+            mappings_changed = self.es.indices.get_mapping("events")["events"]["mappings"] == mappings
+            if settings_changed:
+                self.es.indices.put_settings(settings)
+            if mappings_changed:
+                self.es.indices.put_mapping(mappings)
+
+        else:
+            self.es.indices.create(index="events", body=body)
+
 
 
     def get_all_events(self) -> [Event]:
@@ -249,7 +269,26 @@ class EventStorage():
         Returns a list of suggestions for what the user might want to search on
         based on the query and tha data we have indexed
         """
-        return []
+        self.connect_es()
+        search_result = self.es.search(index="events", body= {
+            "_source": False,
+            "suggest": {
+                    "completer": {
+                        "prefix": query,
+                        "completion": {
+                            "field": "suggest",
+                            "skip_duplicates": True,
+                            "fuzzy": {
+                                "fuzziness": "auto"
+                            }
+                        }
+                    }
+            }
+        })
+
+        print(search_result)
+        
+        return list(map(lambda x: x["text"], search_result["suggest"]["completer"][0]["options"]))
 
 
 
@@ -309,11 +348,21 @@ class EventStorage():
         # Adding to elasticsearch
         id = self.get_event_id(Event(**event))
 
+        # Get the suggest fields
+        suggestions =  []
+        suggestions += [word.lower() for word in event['name'].split(" ")]
+        suggestions += [word.lower() for word in event['host'].split(" ")]
+        suggestions += [word.lower() for word in event['description'].split(" ")]
+        suggestions += [word.lower() for word in event['type'].split(" ")]
+        logging.debug("\nSuggestions:")
+        logging.debug(suggestions)
+
         index_body = {
             "name": event['name'],
             "host": event['host'],
             "description": event['description'],
             "type": event['type'],
+            "suggest": suggestions,
         }
 
 

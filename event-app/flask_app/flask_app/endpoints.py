@@ -90,7 +90,7 @@ def suggestions():
     """
     query = request.args.get('query')
     if not query is None:
-        return event_storage.getSuggestions(query)
+        return jsonify(event_storage.getSuggestions(query))
 
     
 @app.route('/get_hosts')
