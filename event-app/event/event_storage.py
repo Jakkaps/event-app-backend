@@ -144,7 +144,6 @@ class EventStorage():
         # A bit strange expression, but this should flatten the
         # list of lists of filtervalues
         query_filters_values = [y for x in filter_values for y in x]
-        print(query_filters_values)
         if len(filters) != 0:
             query += " WHERE "
 
@@ -285,8 +284,6 @@ class EventStorage():
                     }
             }
         })
-
-        print(search_result)
         
         return list(map(lambda x: x["text"], search_result["suggest"]["completer"][0]["options"]))
 
