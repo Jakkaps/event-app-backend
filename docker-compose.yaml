@@ -63,7 +63,7 @@ services:
       - flask
     restart: always
     ports:
-      - "80:80"
+      - "8000:80"
     networks:
       - web_nw
 
