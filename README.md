@@ -26,6 +26,10 @@ Each parameter is given as normal url paramters like `/get_events?key=value&othe
 ### /search?query=
 You must pass the `?query` parameter to this endpoint. Returnes all events matching this query, sorted by relevance
 
+### /suggestions?query
+Returns a list of suggestions for search terms. 
+You must pass `?query`parameter to this endpoint. 
+
 ### /get_hosts
 Returns a list of all hosts of events that skjerdet.no knows about
 Takes no paramters
