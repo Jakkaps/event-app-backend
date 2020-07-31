@@ -185,7 +185,7 @@ class EventStorage():
         """
         self.connect_db()
        
-        query = "SELECT DISTINCT host from events"
+        query = "SELECT DISTINCT host from events WHERE host != 'NULL'"
 
         cursor = self.db.cursor()
         cursor.execute(query)
@@ -193,7 +193,7 @@ class EventStorage():
         hosts = []
 
         for host in cursor:
-            sub_hosts = host[0].split("")
+            sub_hosts = host[0].split(" ")
             for sub_host in sub_hosts:
                 hosts.append(sub_host)
 
