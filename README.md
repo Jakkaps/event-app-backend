@@ -86,6 +86,7 @@ Given that the database is running, this will write all events to database.
 
 #### The entire application 
 Simply run the following command in the base direcotry
+The application runs on the port 8000
 ```bash
 $ docker-compose up -d --build
 ```
